@@ -3,193 +3,272 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amnesfubbia Music | Explore Your Sound</title>
-    
+    <title>Amnesfubbia Music | Spotify Style</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-
     <style>
         :root {
-            --primary-color: #00d2ff;
-            --secondary-color: #3a7bd5;
-            --glass: rgba(255, 255, 255, 0.1);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+            --spotify-green: #1DB954;
+            --spotify-black: #121212;
+            --spotify-light: #282828;
+            --spotify-grey: #b3b3b3;
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background-color: var(--spotify-black);
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             color: white;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
             overflow: hidden;
         }
 
-        /* Container Utama Glassmorphism */
-        .player-card {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            width: 360px;
-            padding: 30px;
-            border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5);
+        /* Header / Brand */
+        .header {
+            padding: 20px;
             text-align: center;
+            background: linear-gradient(to bottom, #333, var(--spotify-black));
         }
 
-        .brand-name {
-            font-weight: 600;
-            letter-spacing: 3px;
-            font-size: 0.8rem;
-            margin-bottom: 20px;
-            color: var(--primary-color);
-            text-transform: uppercase;
+        .header h1 {
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            color: var(--spotify-green);
         }
 
-        /* Cover Album */
-        .img-area {
-            width: 250px;
-            height: 250px;
-            margin: 0 auto 25px;
-            border-radius: 20px;
+        /* Area Player Utama */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .album-art {
+            width: 280px;
+            height: 280px;
+            background: var(--spotify-light);
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            margin-bottom: 30px;
             overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-            border: 3px solid rgba(255,255,255,0.1);
         }
 
-        .img-area img {
+        .album-art img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.5s ease;
         }
 
-        /* Judul & Artis */
-        .song-details h2 {
-            font-size: 1.4rem;
-            margin-bottom: 5px;
+        .song-info {
+            width: 100%;
+            max-width: 300px;
+            text-align: left;
+            margin-bottom: 20px;
         }
 
-        .song-details p {
-            font-size: 0.9rem;
-            opacity: 0.7;
-            margin-bottom: 25px;
+        .song-info h2 { font-size: 1.5rem; margin: 0; }
+        .song-info p { color: var(--spotify-grey); margin: 5px 0; }
+
+        /* Fitur Galeri HP */
+        .upload-section {
+            margin-bottom: 20px;
         }
+
+        .custom-file-upload {
+            background: var(--spotify-light);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            border: 1px solid var(--spotify-grey);
+        }
+
+        input[type="file"] { display: none; }
 
         /* Progress Bar */
-        .progress-area {
-            height: 6px;
+        .progress-container {
             width: 100%;
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            margin-bottom: 30px;
-            cursor: pointer;
-            position: relative;
+            max-width: 320px;
+            margin-bottom: 20px;
         }
 
         .progress-bar {
-            height: inherit;
+            background: var(--spotify-light);
+            height: 4px;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        .progress-fill {
+            background: var(--spotify-green);
+            height: 100%;
             width: 0%;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-            border-radius: inherit;
+            border-radius: 2px;
             position: relative;
         }
 
-        /* Kontrol Button */
+        /* Controls */
         .controls {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 25px;
         }
 
-        .controls button, .controls a {
+        .btn {
             background: none;
             border: none;
             color: white;
-            cursor: pointer;
             font-size: 1.2rem;
-            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .btn-play {
+            background: white;
+            color: black;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+        }
+
+        .liked { color: var(--spotify-green) !important; }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            background: black;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid #282828;
+        }
+
+        .nav-item {
+            color: var(--spotify-grey);
+            text-align: center;
+            font-size: 0.7rem;
             text-decoration: none;
         }
 
-        .play-pause {
-            width: 65px;
-            height: 65px;
-            background: white;
-            color: #24243e;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.5rem;
-            box-shadow: 0 5px 15px rgba(255,255,255,0.2);
-        }
-
-        .play-pause:hover {
-            transform: scale(1.05);
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .liked {
-            color: #ff4b2b !important;
-            text-shadow: 0 0 10px #ff4b2b;
-        }
-
-        /* Animasi saat musik jalan */
-        .playing img {
-            animation: pulse 2s infinite alternate;
-        }
-
-        @keyframes pulse {
-            from { transform: scale(1); }
-            to { transform: scale(1.05); }
-        }
+        .nav-item i { font-size: 1.2rem; display: block; margin-bottom: 5px; }
+        .nav-item.active { color: white; }
     </style>
 </head>
 <body>
 
-    <div class="player-card" id="main-player">
-        <div class="brand-name">Amnesfubbia Music</div>
-        
-        <div class="img-area">
-            <img src="https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=500" id="track-cover" alt="Cover">
+    <div class="header">
+        <h1>AMNESFUBBIA</h1>
+    </div>
+
+    <div class="main-content">
+        <div class="upload-section">
+            <label for="file-upload" class="custom-file-upload">
+                <i class="fas fa-folder-open"></i> Putar dari Galeri HP
+            </label>
+            <input type="file" id="file-upload" accept="audio/*">
         </div>
 
-        <div class="song-details">
-            <h2 id="track-title">Loading...</h2>
-            <p id="track-artist">Please wait</p>
+        <div class="album-art">
+            <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=500" id="cover" alt="Cover">
         </div>
 
-        <div class="progress-area" id="progress-area">
-            <div class="progress-bar" id="progress-bar"></div>
+        <div class="song-info">
+            <h2 id="title">Pilih Lagu</h2>
+            <p id="artist">Amnesfubbia Music</p>
         </div>
 
-        <audio id="main-audio"></audio>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
 
         <div class="controls">
-            <button id="like-btn"><i class="far fa-heart"></i></button>
-            <button id="prev-btn"><i class="fas fa-backward-step"></i></button>
-            
-            <button class="play-pause" id="play-pause-btn">
-                <i class="fas fa-play"></i>
-            </button>
-            
-            <button id="next-btn"><i class="fas fa-forward-step"></i></button>
-            <a id="download-btn" href="#" download><i class="fas fa-download"></i></a>
+            <button class="btn" id="like-btn"><i class="far fa-heart"></i></button>
+            <button class="btn" id="prev"><i class="fas fa-backward-step"></i></button>
+            <button class="btn btn-play" id="play-btn"><i class="fas fa-play"></i></button>
+            <button class="btn" id="next"><i class="fas fa-forward-step"></i></button>
+            <button class="btn" id="download-trigger"><i class="fas fa-arrow-down-circle"></i></button>
         </div>
     </div>
 
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active"><i class="fas fa-home"></i>Home</a>
+        <a href="#" class="nav-item"><i class="fas fa-search"></i>Search</a>
+        <a href="#" class="nav-item"><i class="fas fa-layer-group"></i>Library</a>
+    </nav>
+
+    <audio id="audio-player"></audio>
+
     <script>
-        const audio = document.getElementById('main-audio');
-        const playPauseBtn = document.getElementById('play-pause-btn');
-        const playIcon = playPauseBtn.querySelector('i');
-        const progressBar = document.getElementById
+        const audio = document.getElementById('audio-player');
+        const playBtn = document.getElementById('play-btn');
+        const fileUpload = document.getElementById('file-upload');
+        const title = document.getElementById('title');
+        const artist = document.getElementById('artist');
+        const progressFill = document.getElementById('progress-fill');
+        const progressBar = document.getElementById('progress-bar');
+        const likeBtn = document.getElementById('like-btn');
+
+        let isPlaying = false;
+
+        // FUNGSI UTAMA: Putar dari Galeri HP
+        fileUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const url = URL.createObjectURL(file);
+                audio.src = url;
+                title.innerText = file.name.replace(/\.[^/.]+$/, ""); // Hapus ekstensi file
+                artist.innerText = "Local File";
+                playMusic();
+            }
+        });
+
+        function playMusic() {
+            isPlaying = true;
+            audio.play();
+            playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        }
+
+        function pauseMusic() {
+            isPlaying = false;
+            audio.pause();
+            playBtn.innerHTML = '<i class="fas fa-play"></i>';
+        }
+
+        playBtn.addEventListener('click', () => {
+            if (audio.src) {
+                isPlaying ? pauseMusic() : playMusic();
+            } else {
+                alert("Silahkan pilih lagu dari galeri dulu!");
+            }
+        });
+
+        // Update Progress Bar
+        audio.addEventListener('timeupdate', () => {
+            const pct = (audio.currentTime / audio.duration) * 100;
+            progressFill.style.width = pct + "%";
+        });
+
+        // Lompat Musik saat Progress Bar di klik
+        progressBar.addEventListener('click', (e) => {
+            const width = progressBar.clientWidth;
+            const clickX = e.offsetX;
+            const duration = audio.duration;
+            audio.currentTime = (clickX / width) * duration;
+        });
+
+        // Fitur Like
+        likeBtn.addEventListener('click', () => {
+            likeBtn.classList.toggle('liked');
+            likeBtn.querySelector('i').classList.toggle('fas');
+            likeBtn.querySelector('i').classList.toggle('far');
+        });
+
+    </script>
+</body>
+</html>
