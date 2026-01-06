@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amnesfubbia Music | Explore Your Sound</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #00d2ff;
+            --secondary-color: #3a7bd5;
+            --glass: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            overflow: hidden;
+        }
+
+        /* Container Utama Glassmorphism */
+        .player-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            width: 360px;
+            padding: 30px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .brand-name {
+            font-weight: 600;
+            letter-spacing: 3px;
+            font-size: 0.8rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            text-transform: uppercase;
+        }
+
+        /* Cover Album */
+        .img-area {
+            width: 250px;
+            height: 250px;
+            margin: 0 auto 25px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            border: 3px solid rgba(255,255,255,0.1);
+        }
+
+        .img-area img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        /* Judul & Artis */
+        .song-details h2 {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+
+        .song-details p {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-bottom: 25px;
+        }
+
+        /* Progress Bar */
+        .progress-area {
+            height: 6px;
+            width: 100%;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            margin-bottom: 30px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: inherit;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: inherit;
+            position: relative;
+        }
+
+        /* Kontrol Button */
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .controls button, .controls a {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+
+        .play-pause {
+            width: 65px;
+            height: 65px;
+            background: white;
+            color: #24243e;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 15px rgba(255,255,255,0.2);
+        }
+
+        .play-pause:hover {
+            transform: scale(1.05);
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .liked {
+            color: #ff4b2b !important;
+            text-shadow: 0 0 10px #ff4b2b;
+        }
+
+        /* Animasi saat musik jalan */
+        .playing img {
+            animation: pulse 2s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="player-card" id="main-player">
+        <div class="brand-name">Amnesfubbia Music</div>
+        
+        <div class="img-area">
+            <img src="https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=500" id="track-cover" alt="Cover">
+        </div>
+
+        <div class="song-details">
+            <h2 id="track-title">Loading...</h2>
+            <p id="track-artist">Please wait</p>
+        </div>
+
+        <div class="progress-area" id="progress-area">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <audio id="main-audio"></audio>
+
+        <div class="controls">
+            <button id="like-btn"><i class="far fa-heart"></i></button>
+            <button id="prev-btn"><i class="fas fa-backward-step"></i></button>
+            
+            <button class="play-pause" id="play-pause-btn">
+                <i class="fas fa-play"></i>
+            </button>
+            
+            <button id="next-btn"><i class="fas fa-forward-step"></i></button>
+            <a id="download-btn" href="#" download><i class="fas fa-download"></i></a>
+        </div>
+    </div>
+
+    <script>
+        const audio = document.getElementById('main-audio');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const playIcon = playPauseBtn.querySelector('i');
+        const progressBar = document.getElementById
