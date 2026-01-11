@@ -2,227 +2,421 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amnesfubbia Music - Spotify Player</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>amnesfubbia xx1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --bg-black: #000000;
-            --bg-dark: #121212;
-            --bg-light: #181818;
-            --spotify-green: #1DB954;
-            --text-grey: #b3b3b3;
-        }
-
-        body {
-            background-color: var(--bg-black);
-            font-family: 'Circular', Arial, sans-serif;
-            margin: 0;
-            color: white;
-            display: grid;
-            grid-template-areas: 
-                "sidebar main"
-                "player player";
-            grid-template-columns: 240px 1fr;
-            grid-template-rows: 1fr 90px;
-            height: 100vh;
-        }
-
-        /* SIDEBAR */
-        .sidebar {
-            grid-area: sidebar;
-            background-color: var(--bg-black);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .brand { font-size: 1.5rem; font-weight: bold; margin-bottom: 10px; color: white; text-decoration: none; }
-        .nav-link { color: var(--text-grey); text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 15px; transition: 0.3s; }
-        .nav-link:hover { color: white; }
-        .nav-link i { font-size: 1.2rem; }
-
-        /* MAIN CONTENT */
-        .main {
-            grid-area: main;
-            background: linear-gradient(to bottom, #222, var(--bg-dark));
-            overflow-y: auto;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 10px 10px 0 0;
-        }
-
-        .hero { display: flex; align-items: flex-end; gap: 20px; padding: 40px 0; }
-        .hero img { width: 200px; height: 200px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-radius: 4px; }
-        .hero-text h1 { font-size: 3rem; margin: 0; }
-
-        .btn-upload {
-            background-color: var(--spotify-green);
-            color: black;
-            padding: 12px 30px;
-            border-radius: 30px;
-            font-weight: bold;
-            cursor: pointer;
-            display: inline-block;
-            margin-top: 20px;
-            border: none;
-        }
-
-        /* PLAYER BAR (BOTTOM) */
-        .player-bar {
-            grid-area: player;
-            background-color: var(--bg-black);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-        }
-
-        .now-playing { display: flex; align-items: center; gap: 15px; width: 30%; }
-        .now-playing img { width: 56px; height: 56px; border-radius: 4px; }
-        .track-info h4 { margin: 0; font-size: 0.9rem; }
-        .track-info p { margin: 0; font-size: 0.75rem; color: var(--text-grey); }
-
-        .player-controls { width: 40%; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .control-btns { display: flex; align-items: center; gap: 20px; }
-        .play-btn { background: white; color: black; width: 32px; height: 32px; border-radius: 50%; border: none; font-size: 1rem; cursor: pointer; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
         
-        .progress-box { width: 100%; display: flex; align-items: center; gap: 10px; color: var(--text-grey); font-size: 0.7rem; }
-        .bar { flex: 1; height: 4px; background: #4f4f4f; border-radius: 2px; cursor: pointer; position: relative; }
-        .bar-fill { height: 100%; background: white; width: 0%; border-radius: 2px; transition: 0.1s; }
-        .bar:hover .bar-fill { background: var(--spotify-green); }
+        body { background-color: #000; color: #fff; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
 
-        .volume-controls { width: 30%; display: flex; justify-content: flex-end; align-items: center; gap: 10px; }
+        /* HEADER SECTION */
+        .fixed-header-section {
+            position: fixed; top: 0; width: 100%; z-index: 100;
+            background: #000; border-bottom: 1px solid #1c1c1c;
+        }
+        .ig-header { padding: 12px 15px 5px 15px; }
+        .search-area { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
+        .search-container {
+            background: #0a0a0a; border-radius: 8px; display: flex;
+            align-items: center; padding: 7px 12px; flex-grow: 1;
+            border: 1px solid #1c1c1c;
+        }
+        .search-container input { background: transparent; border: none; color: white; font-size: 13px; width: 100%; outline: none; margin-left: 8px; }
         
-        input[type="file"] { display: none; }
+        .year-selector {
+            background: #0a0a0a; border: 1px solid #1c1c1c; border-radius: 8px;
+            padding: 8px 12px; font-size: 9px; font-weight: 800; color: #fff;
+            white-space: nowrap; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; gap: 5px;
+        }
+
+        .year-dropdown {
+            display: none; position: fixed; top: 110px; right: 15px; width: 120px;
+            max-height: 300px; background: #121212; border: 1px solid #1c1c1c;
+            border-radius: 12px; z-index: 101; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .year-item { padding: 12px; font-size: 11px; font-weight: 600; text-align: center; border-bottom: 1px solid #1c1c1c; color: #888; cursor: pointer; }
+
+        .category-wrapper { display: flex; align-items: center; justify-content: space-between; padding: 5px 15px 12px 15px; gap: 8px; }
+        .category-scroll { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+        .pill { 
+            background: transparent; border: 1px solid #1c1c1c; color: #fff; 
+            padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 700; 
+            white-space: nowrap; text-transform: uppercase;
+        }
+        .pill.active { background: #fff; color: #000; border-color: #fff; }
+        .btn-account-circle { background: #0a0a0a; border: 1px solid #1c1c1c; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+        .highlights-section { padding: 15px 0; border-bottom: 1px solid #1c1c1c; background: #000; }
+        .highlights-container { display: flex; gap: 15px; overflow-x: auto; padding: 0 15px; scrollbar-width: none; }
+        .highlight-item { flex: 0 0 68px; text-align: center; cursor: pointer; }
+        .circle-icon {
+            width: 62px; height: 62px; border-radius: 50%; background: #000;
+            border: 1.5px solid #1c1c1c; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 8px auto; font-size: 18px; color: #555;
+        }
+        .highlight-item.active .circle-icon { border-color: #fff; color: #fff; }
+        .highlight-label { font-size: 9px; color: #555; font-weight: 700; text-transform: uppercase; }
+        .highlight-item.active .highlight-label { color: #fff; }
+
+        /* FEED GRID */
+        .movie-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5px; padding-top: 275px; padding-bottom: 50px; }
+        .post-card { position: relative; aspect-ratio: 2/3; background: #0a0a0a; overflow: hidden; }
+        .post-card img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* BADGES */
+        .badge-type { position: absolute; top: 6px; right: 6px; padding: 2px 5px; border-radius: 2px; font-size: 7px; font-weight: 900; text-transform: uppercase; z-index: 5; background: rgba(0,0,0,0.7); color: #fff; border: 0.5px solid rgba(255,255,255,0.2); }
+        .badge-genre { position: absolute; top: 22px; right: 6px; padding: 2px 5px; border-radius: 2px; font-size: 6px; font-weight: 700; text-transform: uppercase; z-index: 5; background: rgba(0,0,0,0.5); color: #ccc; border: 0.5px solid rgba(255,255,255,0.1); }
+        .badge-rating { position: absolute; top: 6px; left: 6px; padding: 2px 5px; border-radius: 2px; font-size: 7px; font-weight: 900; z-index: 5; background: rgba(255,255,255,0.9); color: #000; }
+
+        /* BACK TO TOP */
+        #backToTop { display: none; position: fixed; bottom: 25px; right: 20px; width: 40px; height: 40px; background: #fff; color: #000; border-radius: 50%; z-index: 150; border: none; font-size: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; }
+
+        /* PLAYER MODAL */
+        .modal-player { display: none; position: fixed; inset: 0; z-index: 200; background: #000; overflow-y: auto; }
+        #loader { position: fixed; top: 0; left: 0; height: 1.5px; background: #fff; width: 0%; transition: width 0.3s; z-index: 1000; }
+        
+        .info-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 12px; margin-top: 20px; }
+        .info-box { background: #0a0a0a; border: 1px solid #1c1c1c; padding: 12px; border-radius: 12px; }
+        .info-label { font-size: 7px; color: #555; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+        .info-value { font-size: 10px; color: #fff; font-weight: 600; }
+
+        .cast-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; }
+        .cast-item { flex: 0 0 60px; text-align: center; cursor: pointer; }
+        .cast-img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-bottom: 5px; border: 1px solid #1c1c1c; }
+
+        .server-btn { width: 100%; padding: 14px; border-radius: 12px; font-size: 10px; font-weight: 800; text-transform: uppercase; border: 1px solid #1c1c1c; transition: 0.2s; text-align: center; display: block; cursor: pointer; }
+        .server-btn:active { transform: scale(0.98); opacity: 0.8; }
+        
+        .btn-download-minimal { background: transparent; color: #a1a1aa; border: 1px solid #1c1c1c; }
+        .btn-download-minimal:active { background: #fff; color: #000; }
+        
+        .btn-like { color: #555; transition: 0.3s; cursor: pointer; }
+        .btn-like.active { color: #ff2d55; }
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <a href="#" class="brand"><i class="fab fa-spotify"></i> Amnesfubbia</a>
-        <a href="#" class="nav-link"><i class="fas fa-home"></i> Home</a>
-        <a href="#" class="nav-link"><i class="fas fa-search"></i> Search</a>
-        <a href="#" class="nav-link"><i class="fas fa-book"></i> Your Library</a>
-    </div>
+    <div id="loader"></div>
+    <button id="backToTop" onclick="window.scrollTo({top:0, behavior:'smooth'})"><i class="fa-solid fa-arrow-up"></i></button>
 
-    <div class="main">
-        <div class="hero">
-            <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=500" id="main-cover">
-            <div class="hero-text">
-                <p>PLAYLIST</p>
-                <h1 id="main-title">Amnesfubbia Music</h1>
-                <p id="main-artist">Upload musikmu dari HP dan dengarkan sekarang.</p>
-                <label for="upload" class="btn-upload">PILIH DARI GALERI HP</label>
-                <input type="file" id="upload" accept="audio/*">
-            </div>
-        </div>
-    </div>
-
-    <div class="player-bar">
-        <div class="now-playing">
-            <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100" id="player-cover">
-            <div class="track-info">
-                <h4 id="player-title">Tidak ada lagu</h4>
-                <p id="player-artist">Amnesfubbia</p>
-            </div>
-            <i class="far fa-heart" id="like-btn" style="cursor: pointer;"></i>
-        </div>
-
-        <div class="player-controls">
-            <div class="control-btns">
-                <button class="btn" style="color:var(--text-grey)"><i class="fas fa-shuffle"></i></button>
-                <button class="btn" style="color:white; font-size:1.2rem"><i class="fas fa-backward-step"></i></button>
-                <button class="play-btn" id="play-btn"><i class="fas fa-play"></i></button>
-                <button class="btn" style="color:white; font-size:1.2rem"><i class="fas fa-forward-step"></i></button>
-                <button class="btn" style="color:var(--text-grey)"><i class="fas fa-repeat"></i></button>
-            </div>
-            <div class="progress-box">
-                <span id="current-time">0:00</span>
-                <div class="bar" id="progress-bar">
-                    <div class="bar-fill" id="bar-fill"></div>
+    <div class="fixed-header-section">
+        <header class="ig-header">
+            <div class="flex justify-between items-center">
+                <h1 class="text-xl font-bold italic lowercase tracking-tight" onclick="location.reload()">
+                    amnesfubbia <span class="text-white opacity-50 font-normal">xx1</span>
+                </h1>
+                <div class="flex gap-6 text-lg">
+                    <i class="fa-regular fa-square-plus"></i>
+                    <i class="fa-solid fa-bars"></i>
                 </div>
-                <span id="duration">0:00</span>
             </div>
+            <div class="search-area">
+                <div class="search-container">
+                    <i class="fa-solid fa-magnifying-glass text-zinc-600 text-[10px]"></i>
+                    <input type="text" id="searchInp" placeholder="Cari sinema Indonesia..." onkeydown="if(event.key==='Enter') searchAction()">
+                </div>
+                <div class="year-selector" onclick="toggleYearDropdown()">
+                    <span id="yearVal">TAHUN</span> <i class="fa-solid fa-chevron-down text-[7px]"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="category-wrapper">
+            <div class="category-scroll no-scrollbar">
+                <button class="pill active" onclick="setFilter('type', 'multi', this)">Semua</button>
+                <button class="pill" onclick="setFilter('type', 'movie', this)">Film</button>
+                <button class="pill" onclick="setFilter('type', 'tv', this)">Series</button>
+                <button class="pill" onclick="setFilter('type', 'short', this)">Short</button>
+            </div>
+            <div class="btn-account-circle"><i class="fa-regular fa-user text-xs"></i></div>
         </div>
 
-        <div class="volume-controls">
-            <i class="fas fa-volume-high"></i>
-            <div class="bar" style="width: 100px;">
-                <div class="bar-fill" style="width: 70%;"></div>
+        <div class="highlights-section">
+            <div class="highlights-container no-scrollbar" id="genreHighlights">
+                <div class="highlight-item active" onclick="setFilter('genre', '', this)">
+                    <div class="circle-icon"><i class="fa-solid fa-border-all"></i></div>
+                    <p class="highlight-label">Semua</p>
+                </div>
+                <div class="highlight-item" onclick="setFilter('genre', '27', this)"><div class="circle-icon"><i class="fa-solid fa-ghost"></i></div><p class="highlight-label">Horor</p></div>
+                <div class="highlight-item" onclick="setFilter('genre', '35', this)"><div class="circle-icon"><i class="fa-solid fa-masks-theater"></i></div><p class="highlight-label">Komedi</p></div>
+                <div class="highlight-item" onclick="setFilter('genre', '10749', this)"><div class="circle-icon"><i class="fa-solid fa-heart"></i></div><p class="highlight-label">Romantis</p></div>
+                <div class="highlight-item" onclick="setFilter('genre', '28', this)"><div class="circle-icon"><i class="fa-solid fa-bolt"></i></div><p class="highlight-label">Aksi</p></div>
+                <div class="highlight-item" onclick="setFilter('genre', '18', this)"><div class="circle-icon"><i class="fa-solid fa-clapperboard"></i></div><p class="highlight-label">Drama</p></div>
+                <div class="highlight-item" onclick="setFilter('genre', '14', this)"><div class="circle-icon"><i class="fa-solid fa-wand-sparkles"></i></div><p class="highlight-label">Fantasi</p></div>
+                <div class="highlight-item" onclick="setFilter('genre', '9648', this)"><div class="circle-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></div><p class="highlight-label">Misteri</p></div>
             </div>
         </div>
     </div>
 
-    <audio id="audio"></audio>
+    <div id="yearDropdown" class="year-dropdown no-scrollbar"></div>
+    <main id="feedGrid" class="movie-grid"></main>
+
+    <div id="movieModal" class="modal-player">
+        <div class="max-w-xl mx-auto pb-20">
+            <div class="p-4 flex items-center justify-between border-b border-zinc-900 sticky top-0 bg-black z-50">
+                <i class="fa-solid fa-xmark text-lg" onclick="closeModal()"></i>
+                <div class="flex items-center gap-2 overflow-hidden px-4">
+                    <h2 id="mTitle" class="text-[11px] font-bold truncate uppercase tracking-widest text-center"></h2>
+                    <i class="fa-solid fa-heart btn-like text-sm" onclick="this.classList.toggle('active')"></i>
+                </div>
+                <div class="w-5"></div>
+            </div>
+            
+            <div class="aspect-video bg-zinc-900 w-full relative">
+                <iframe id="videoPlayer" class="w-full h-full" allow="autoplay; fullscreen" allowfullscreen></iframe>
+            </div>
+
+            <div class="p-6">
+                <div id="mTagline" class="text-xs font-bold italic text-white mb-2"></div>
+                <div id="mMeta" class="text-[9px] text-zinc-500 font-black mb-4 tracking-widest uppercase"></div>
+                <p id="mDesc" class="text-xs text-zinc-400 leading-relaxed mb-6 font-light"></p>
+
+                <div class="info-grid mb-8">
+                    <div class="info-box"><p class="info-label">Rating TMDB</p><p id="infoRating" class="info-value">-</p></div>
+                </div>
+
+                <div class="mb-8">
+                    <h4 class="text-[9px] font-black text-zinc-600 uppercase mb-2 tracking-widest">Pemeran Utama</h4>
+                    <div id="mCast" class="cast-scroll no-scrollbar"></div>
+                </div>
+
+                <div id="seriesControl" class="hidden mb-6 p-4 bg-zinc-950 rounded-2xl border border-zinc-900">
+                    <div class="grid grid-cols-2 gap-4">
+                        <select id="seasonSel" class="bg-zinc-900 text-white text-[10px] font-bold p-3 rounded-xl" onchange="loadEpisodes()"></select>
+                        <select id="episodeSel" class="bg-zinc-900 text-white text-[10px] font-bold p-3 rounded-xl" onchange="playEpisode()"></select>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h4 class="text-[9px] font-black text-zinc-600 uppercase mb-4 tracking-widest text-center">Pilih Server Streaming</h4>
+                    <div id="serverList" class="grid grid-cols-2 gap-2"></div>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-zinc-900">
+                    <h4 class="text-[9px] font-black text-zinc-600 uppercase mb-4 tracking-widest text-center">Link Unduhan</h4>
+                    <button id="btnDownload" class="server-btn btn-download-minimal"><i class="fa-solid fa-download mr-2"></i> Download (vidsrc.vip)</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
-        const audio = document.getElementById('audio');
-        const upload = document.getElementById('upload');
-        const playBtn = document.getElementById('play-btn');
-        const barFill = document.getElementById('bar-fill');
-        const progressBar = document.getElementById('progress-bar');
-        
-        // Update info di player
-        const pTitle = document.getElementById('player-title');
-        const pArtist = document.getElementById('player-artist');
-        const pCover = document.getElementById('player-cover');
-        const currentTimeEl = document.getElementById('current-time');
-        const durationEl = document.getElementById('duration');
+        const API_KEY = 'bfa7df5310c9974f62f26c6789a8c00d';
+        let page = 1, loading = false, currentType = 'multi', currentGenre = '', currentYear = '', searchQuery = '', actorId = '';
 
-        upload.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const url = URL.createObjectURL(file);
-                audio.src = url;
-                pTitle.innerText = file.name.replace(/\.[^/.]+$/, "");
-                pArtist.innerText = "Local File";
-                playMusic();
-            }
-        });
+        const STREAM_SERVERS = [
+            { name: "VidRock", url: "https://vidrock.net/embed/" },
+            { name: "VidStorm", url: "https://vidstorm.ru/embed/" }
+        ];
+        const DL_BASE = "https://dl.vidsrc.vip/";
 
-        function playMusic() {
-            audio.play();
-            playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        // Mapping Genre ID ke Nama (Singkat)
+        const GENRE_MAP = { 28:"Aksi", 12:"Petualang", 16:"Animasi", 35:"Komedi", 80:"Kriminal", 99:"Dokumenter", 18:"Drama", 10751:"Keluarga", 14:"Fantasi", 36:"Sejarah", 27:"Horor", 10402:"Musik", 9648:"Misteri", 10749:"Romantis", 878:"Sci-Fi", 10770:"TV Movie", 53:"Thriller", 10752:"Perang", 37:"Western" };
+
+        window.onload = () => { initYearDropdown(); loadFeed(); };
+
+        window.onscroll = () => {
+            document.getElementById('backToTop').style.display = window.scrollY > 400 ? 'block' : 'none';
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 900 && !loading) { page++; loadFeed(false); }
+        };
+
+        function initYearDropdown() {
+            const dropdown = document.getElementById('yearDropdown');
+            let html = '<div class="year-item" onclick="setYear(\'\')">SEMUA</div>';
+            for(let y = 2026; y >= 1930; y--) html += `<div class="year-item" onclick="setYear(${y})">${y}</div>`;
+            dropdown.innerHTML = html;
         }
 
-        playBtn.addEventListener('click', () => {
-            if(audio.paused) {
-                audio.play();
-                playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            } else {
-                audio.pause();
-                playBtn.innerHTML = '<i class="fas fa-play"></i>';
-            }
-        });
+        function toggleYearDropdown() {
+            const d = document.getElementById('yearDropdown');
+            d.style.display = (d.style.display === 'block') ? 'none' : 'block';
+        }
 
-        audio.addEventListener('timeupdate', () => {
-            const { currentTime, duration } = audio;
-            const pct = (currentTime / duration) * 100;
-            barFill.style.width = pct + "%";
+        function setYear(y) {
+            currentYear = y; document.getElementById('yearVal').innerText = y || 'TAHUN';
+            document.getElementById('yearDropdown').style.display = 'none'; actorId = ''; loadFeed(true);
+        }
+
+        async function loadFeed(isNew = true) {
+            if (loading) return;
+            loading = true;
+            if (isNew) { page = 1; document.getElementById('feedGrid').innerHTML = ''; }
+            showLoader(30);
             
-            currentTimeEl.innerText = formatTime(currentTime);
-            if(duration) durationEl.innerText = formatTime(duration);
-        });
-
-        progressBar.addEventListener('click', (e) => {
-            const width = progressBar.clientWidth;
-            const clickX = e.offsetX;
-            audio.currentTime = (clickX / width) * audio.duration;
-        });
-
-        function formatTime(time) {
-            const min = Math.floor(time / 60);
-            const sec = Math.floor(time % 60);
-            return `${min}:${sec < 10 ? '0'+sec : sec}`;
+            try {
+                let items = [];
+                let yearParam = currentYear ? `&primary_release_year=${currentYear}&first_air_date_year=${currentYear}` : '';
+                let genreParam = currentGenre ? `&with_genres=${currentGenre}` : '';
+                
+                if (actorId) {
+                    const res = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_cast=${actorId}&with_origin_country=ID&language=id-ID&page=${page}`);
+                    const data = await res.json();
+                    items = (data.results || []).map(x => ({...x, m_type: 'movie'}));
+                } else if (searchQuery) {
+                    const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(searchQuery)}&language=id-ID&page=${page}&region=ID`);
+                    const data = await res.json();
+                    items = (data.results || []).filter(i => 
+                        (i.origin_country && i.origin_country.includes('ID')) || 
+                        (i.original_language === 'id')
+                    ).map(x => ({...x, m_type: x.media_type}));
+                } else if (currentType === 'multi') {
+                    const [resM, resT] = await Promise.all([
+                        fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_origin_country=ID&language=id-ID&page=${page}${genreParam}${yearParam}`),
+                        fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}&with_origin_country=ID&language=id-ID&page=${page}${genreParam}${yearParam}`)
+                    ]);
+                    const dM = await resM.json(); const dT = await resT.json();
+                    items = [...(dM.results||[]).map(x=>({...x, m_type:'movie'})), ...(dT.results||[]).map(x=>({...x, m_type:'tv'}))];
+                    items.sort((a,b) => b.popularity - a.popularity);
+                } else {
+                    let ep = (currentType === 'tv') ? 'tv' : 'movie';
+                    let url = `https://api.themoviedb.org/3/discover/${ep}?api_key=${API_KEY}&with_origin_country=ID&language=id-ID&page=${page}${yearParam}${genreParam}`;
+                    if(currentType === 'short') url += '&with_runtime.lte=45';
+                    const res = await fetch(url); const d = await res.json();
+                    items = (d.results||[]).map(x=>({...x, m_type: currentType === 'short' ? 'short' : ep}));
+                }
+                renderFeed(items);
+            } catch (err) { console.error(err); }
+            loading = false; showLoader(100);
         }
 
-        document.getElementById('like-btn').addEventListener('click', function() {
-            this.classList.toggle('fas');
-            this.classList.toggle('far');
-            this.style.color = this.classList.contains('fas') ? '#1DB954' : 'white';
-        });
+        function renderFeed(data) {
+            const grid = document.getElementById('feedGrid');
+            data.forEach(m => {
+                if (!m.poster_path) return;
+                const card = document.createElement('div');
+                card.className = 'post-card active:opacity-60 transition-opacity';
+                
+                let label = m.m_type === 'tv' ? 'Series' : (m.m_type === 'short' ? 'Short' : 'Film');
+                let rating = m.vote_average ? m.vote_average.toFixed(1) : 'N/A';
+                let genreName = m.genre_ids && m.genre_ids[0] ? (GENRE_MAP[m.genre_ids[0]] || '') : '';
+
+                card.onclick = () => openModal(m.id, (m.m_type === 'short' ? 'movie' : (m.m_type || 'movie')));
+                card.innerHTML = `
+                    <div class="badge-rating"><i class="fa-solid fa-star text-[6px]"></i> ${rating}</div>
+                    <div class="badge-type">${label}</div>
+                    ${genreName ? `<div class="badge-genre">${genreName}</div>` : ''}
+                    <img src="https://image.tmdb.org/t/p/w342${m.poster_path}" loading="lazy">
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        async function openModal(id, type) {
+            const modal = document.getElementById('movieModal');
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            showLoader(50);
+            
+            // Reset heart button
+            document.querySelector('.btn-like').classList.remove('active');
+
+            try {
+                const [resId, resEn] = await Promise.all([
+                    fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${API_KEY}&language=id-ID&append_to_response=videos,credits`),
+                    fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${API_KEY}&language=en-US&append_to_response=videos`)
+                ]);
+                const d = await resId.json();
+                const dEn = await resEn.json();
+
+                document.getElementById('mTitle').innerText = d.title || d.name;
+                document.getElementById('mTagline').innerText = d.tagline || dEn.tagline || "";
+                document.getElementById('mMeta').innerText = `${(d.release_date||d.first_air_date||'').split('-')[0]} // ${(d.runtime||d.episode_run_time?.[0]||'0')} MENIT // ${type.toUpperCase()}`;
+                document.getElementById('mDesc').innerText = d.overview || dEn.overview || "Informasi sinopsis belum tersedia.";
+                document.getElementById('infoRating').innerText = `★ ${d.vote_average.toFixed(1)} / 10`;
+
+                document.getElementById('mCast').innerHTML = (d.credits?.cast || []).slice(0, 10).map(c => `
+                    <div class="cast-item" onclick="searchByActor('${c.id}', '${c.name.replace(/'/g, "\\'")}')">
+                        <img src="${c.profile_path ? 'https://image.tmdb.org/t/p/w185'+c.profile_path : 'https://via.placeholder.com/100x100?text=Actor'}" class="cast-img">
+                        <p class="text-[7px] font-bold text-zinc-500 truncate">${c.name}</p>
+                    </div>
+                `).join('');
+
+                const trailers = [...(d.videos?.results || []), ...(dEn.videos?.results || [])];
+                const officialTrailer = trailers.find(v => v.type === 'Trailer' && v.site === 'YouTube');
+                
+                if (officialTrailer) {
+                    document.getElementById('videoPlayer').src = `https://www.youtube.com/embed/${officialTrailer.key}?autoplay=1&mute=0&rel=0`;
+                } else {
+                    document.getElementById('videoPlayer').src = buildEmbedUrl(STREAM_SERVERS[0].url, type, id);
+                }
+
+                document.getElementById('serverList').innerHTML = STREAM_SERVERS.map(s => `
+                    <button class="server-btn bg-zinc-950 text-zinc-400" onclick="changeServer('${s.url}', '${type}', '${id}')">${s.name}</button>
+                `).join('');
+
+                document.getElementById('btnDownload').onclick = () => window.open(`${DL_BASE}${type}/${id}`, '_blank');
+
+                if(type === 'tv') {
+                    document.getElementById('seriesControl').classList.remove('hidden');
+                    document.getElementById('seasonSel').innerHTML = (d.seasons || []).filter(s=>s.season_number > 0).map(s=>`<option value="${s.season_number}">SEASON ${s.season_number}</option>`).join('');
+                    window.currentSeriesId = id;
+                    loadEpisodes();
+                } else { document.getElementById('seriesControl').classList.add('hidden'); }
+
+            } catch(e) { console.error("Error loading details:", e); }
+            showLoader(100);
+        }
+
+        function searchByActor(id, name) {
+            closeModal();
+            actorId = id;
+            searchQuery = '';
+            document.getElementById('searchInp').value = name;
+            loadFeed(true);
+        }
+
+        function buildEmbedUrl(baseUrl, type, id, season = null, episode = null) {
+            let url = baseUrl;
+            if (season && episode) {
+                url += `tv/${id}/${season}/${episode}`;
+            } else {
+                url += `${type}/${id}`;
+            }
+            return url;
+        }
+
+        function changeServer(baseUrl, type, id) { 
+            document.getElementById('videoPlayer').src = buildEmbedUrl(baseUrl, type, id); 
+        }
+
+        function searchAction() { 
+            searchQuery = document.getElementById('searchInp').value; 
+            actorId = ''; 
+            loadFeed(true); 
+        }
+        
+        function closeModal() { document.getElementById('movieModal').style.display = 'none'; document.getElementById('videoPlayer').src = ''; document.body.style.overflow = 'auto'; }
+        function showLoader(w) { const l = document.getElementById('loader'); l.style.width = w + '%'; if(w === 100) setTimeout(() => l.style.width = '0%', 400); }
+
+        async function loadEpisodes() {
+            const s = document.getElementById('seasonSel').value;
+            const res = await fetch(`https://api.themoviedb.org/3/tv/${window.currentSeriesId}/season/${s}?api_key=${API_KEY}&language=id-ID`);
+            const d = await res.json();
+            document.getElementById('episodeSel').innerHTML = (d.episodes||[]).map(e => `<option value="${e.episode_number}">EPISODE ${e.episode_number}</option>`).join('');
+            playEpisode();
+        }
+
+        function playEpisode() {
+            const s = document.getElementById('seasonSel').value; const e = document.getElementById('episodeSel').value;
+            document.getElementById('videoPlayer').src = `https://vidrock.net/embed/tv/${window.currentSeriesId}/${s}/${e}?autoplay=1`;
+        }
+
+        function setFilter(type, val, el) {
+            actorId = '';
+            if(type === 'type') {
+                document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+                currentType = val; currentGenre = '';
+                document.querySelectorAll('.highlight-item').forEach(p => p.classList.remove('active'));
+                document.querySelector('.highlight-item:first-child').classList.add('active');
+            } else {
+                document.querySelectorAll('.highlight-item').forEach(p => p.classList.remove('active'));
+                currentGenre = val;
+            }
+            el.classList.add('active'); searchQuery = ''; document.getElementById('searchInp').value = ''; loadFeed(true);
+        }
     </script>
 </body>
 </html>
