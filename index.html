@@ -71,6 +71,9 @@
         .badge-genre { position: absolute; top: 22px; right: 6px; padding: 2px 5px; border-radius: 2px; font-size: 6px; font-weight: 700; text-transform: uppercase; z-index: 5; background: rgba(0,0,0,0.5); color: #ccc; border: 0.5px solid rgba(255,255,255,0.1); }
         .badge-rating { position: absolute; top: 6px; left: 6px; padding: 2px 5px; border-radius: 2px; font-size: 7px; font-weight: 900; z-index: 5; background: rgba(255,255,255,0.9); color: #000; }
 
+        /* VERIFIED BADGE */
+        .verified-badge { color: #0095f6; font-size: 11px; margin-left: 4px; }
+
         /* BACK TO TOP */
         #backToTop { display: none; position: fixed; bottom: 25px; right: 20px; width: 40px; height: 40px; background: #fff; color: #000; border-radius: 50%; z-index: 150; border: none; font-size: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; }
 
@@ -105,9 +108,12 @@
     <div class="fixed-header-section">
         <header class="ig-header">
             <div class="flex justify-between items-center">
-                <h1 class="text-xl font-bold italic lowercase tracking-tight" onclick="location.reload()">
-                    amnesfubbia <span class="text-white opacity-50 font-normal">xx1</span>
-                </h1>
+                <div class="flex items-center">
+                    <h1 class="text-xl font-bold italic lowercase tracking-tight" onclick="location.reload()">
+                        amnesfubbia <span class="text-white opacity-50 font-normal">xx1</span>
+                    </h1>
+                    <i class="fa-solid fa-circle-check verified-badge"></i>
+                </div>
                 <div class="flex gap-6 text-lg">
                     <i class="fa-regular fa-square-plus"></i>
                     <i class="fa-solid fa-bars"></i>
@@ -213,7 +219,6 @@
         ];
         const DL_BASE = "https://dl.vidsrc.vip/";
 
-        // Mapping Genre ID ke Nama (Singkat)
         const GENRE_MAP = { 28:"Aksi", 12:"Petualang", 16:"Animasi", 35:"Komedi", 80:"Kriminal", 99:"Dokumenter", 18:"Drama", 10751:"Keluarga", 14:"Fantasi", 36:"Sejarah", 27:"Horor", 10402:"Musik", 9648:"Misteri", 10749:"Romantis", 878:"Sci-Fi", 10770:"TV Movie", 53:"Thriller", 10752:"Perang", 37:"Western" };
 
         window.onload = () => { initYearDropdown(); loadFeed(); };
@@ -309,8 +314,6 @@
             modal.style.display = 'block';
             document.body.style.overflow = 'hidden';
             showLoader(50);
-            
-            // Reset heart button
             document.querySelector('.btn-like').classList.remove('active');
 
             try {
@@ -420,3 +423,4 @@
     </script>
 </body>
 </html>
+
