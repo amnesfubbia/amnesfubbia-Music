@@ -42,13 +42,16 @@
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #000; border-top: 1px solid #1c1c1c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 300; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
         .nav-item { color: #fff; font-size: 20px; cursor: pointer; }
         
+        /* MODAL STYLES */
         .modal-player { display: none; position: fixed; inset: 0; z-index: 200; background: #000; overflow-y: auto; }
-        #mTitle { font-size: 14px; font-weight: 700; color: #fff; letter-spacing: -0.2px; }
-        #mMeta { font-size: 11px; color: #a8a8a8; font-weight: 400; margin-bottom: 4px; }
+        #mTitle { font-size: 14px; font-weight: 700; color: #fff; }
+        #mMeta { font-size: 11px; color: #a8a8a8; font-weight: 400; margin-top: 2px; }
         #mDesc { font-size: 13.5px; color: #fff; line-height: 1.4; font-weight: 400; }
         .interaction-icon { font-size: 24px; cursor: pointer; color: #fff; transition: transform 0.1s; }
         .interaction-icon:active { transform: scale(1.1); }
-        .like-count { font-size: 14px; font-weight: 700; color: #fff; margin-top: 2px; }
+        .like-count { font-size: 14px; font-weight: 600; color: #fff; }
+        .time-ago { font-size: 10px; color: #a8a8a8; text-transform: uppercase; letter-spacing: 0.2px; margin-top: 6px; font-weight: 400; }
+        .read-more-btn { color: #a8a8a8; cursor: pointer; font-weight: 400; margin-left: 4px; }
         
         .server-btn { width: 100%; padding: 14px; border-radius: 12px; font-size: 10px; font-weight: 800; text-transform: uppercase; border: 1px solid #1c1c1c; text-align: center; cursor: pointer; }
         .skeleton { background: linear-gradient(90deg, #0a0a0a 25%, #1a1a1a 50%, #0a0a0a 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s infinite; }
@@ -153,9 +156,16 @@
             </div>
 
             <div class="px-4">
-                <p class="mb-1"><span class="font-bold text-sm mr-2" id="mTitleAlt"></span><span id="mTagline" class="text-sm text-zinc-300"></span></p>
-                <p id="mDesc" class="mb-2"></p>
+                <p class="mb-1">
+                    <span class="font-bold text-[14px] mr-2" id="mTitleAlt"></span>
+                    <span id="mTagline" class="text-sm text-zinc-300 font-normal"></span>
+                </p>
+                <p class="mb-1">
+                    <span id="mDescDisplay"></span>
+                    <span id="readMoreBtn" class="read-more-btn hidden" onclick="expandDesc()">selengkapnya</span>
+                </p>
                 <p id="mMeta"></p>
+                <p id="mTime" class="time-ago"></p>
             </div>
             
             <div class="px-4 pt-2">
@@ -179,7 +189,8 @@
     <script>
         const API_KEY = 'bfa7df5310c9974f62f26c6789a8c00d';
         let page = 1, loading = false, currentType = 'multi', currentGenre = '', currentYear = '', searchQuery = '', currentActorId = '', isLibraryMode = false;
-        
+        let fullDescription = "";
+
         const getStore = (key) => JSON.parse(localStorage.getItem(key) || '[]');
         const saveStore = (key, data) => localStorage.setItem(key, JSON.stringify(data));
 
@@ -218,7 +229,6 @@
                     const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}${mandatory}&query=${encodeURIComponent(searchQuery)}&page=${page}`);
                     const data = await res.json(); items = (data.results || []).map(x => ({...x, m_type: x.media_type}));
                 } else if (currentType === 'short') {
-                    // Akurasi Short: Ditambahkan filter runtime maksimal 40 menit
                     const res = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}${mandatory}${genre}${year}&with_runtime.lte=40&page=${page}`);
                     const data = await res.json(); items = (data.results || []).map(x => ({...x, m_type: 'short'}));
                 } else if (currentType === 'multi') {
@@ -253,6 +263,23 @@
             });
         }
 
+        function calculateTimeAgo(dateStr) {
+            if(!dateStr) return "Baru saja";
+            const release = new Date(dateStr);
+            const now = new Date();
+            const diffDays = Math.floor((now - release) / (1000 * 60 * 60 * 24));
+            if(diffDays <= 0) return "Hari ini";
+            if(diffDays < 7) return `${diffDays} hari yang lalu`;
+            if(diffDays < 30) return `${Math.floor(diffDays/7)} minggu yang lalu`;
+            if(diffDays < 365) return `${Math.floor(diffDays/30)} bulan yang lalu`;
+            return `${Math.floor(diffDays/365)} tahun yang lalu`;
+        }
+
+        function expandDesc() {
+            document.getElementById('mDescDisplay').innerText = fullDescription;
+            document.getElementById('readMoreBtn').classList.add('hidden');
+        }
+
         async function openModal(id, type) {
             const modal = document.getElementById('movieModal');
             modal.style.display = 'block';
@@ -267,27 +294,38 @@
                 ]);
                 const d = await resId.json(); const dEn = await resEn.json();
                 const title = d.title || d.name;
+                const releaseDate = d.release_date || d.first_air_date;
+                
                 document.getElementById('mTitle').innerText = title;
                 document.getElementById('mTitleAlt').innerText = title.toLowerCase().replace(/\s+/g, '');
                 document.getElementById('mTagline').innerText = d.tagline || dEn.tagline || "";
-                document.getElementById('mMeta').innerText = `${(d.release_date||d.first_air_date||'').split('-')[0]} // ${type.toUpperCase()}`;
+                document.getElementById('mMeta').innerText = `${(releaseDate||'').split('-')[0]} // ${type.toUpperCase()}`;
+                document.getElementById('mTime').innerText = calculateTimeAgo(releaseDate);
                 
-                // Perbaikan Sinopsis Kosong
-                document.getElementById('mDesc').innerText = d.overview || dEn.overview || "Sinopsis untuk sinema ini belum tersedia secara resmi, silakan tonton trailer atau akses langsung melalui server.";
+                // Read More Logic
+                fullDescription = d.overview || dEn.overview || "Sinopsis untuk sinema ini belum tersedia secara resmi.";
+                if(fullDescription.length > 100) {
+                    document.getElementById('mDescDisplay').innerText = fullDescription.substring(0, 100) + "...";
+                    document.getElementById('readMoreBtn').classList.remove('hidden');
+                } else {
+                    document.getElementById('mDescDisplay').innerText = fullDescription;
+                    document.getElementById('readMoreBtn').classList.add('hidden');
+                }
                 
                 const rating = d.vote_average || 0;
                 const fakeLikes = Math.floor(rating * 1250);
                 document.getElementById('mLikeCount').innerText = `${fakeLikes.toLocaleString('id-ID')} suka`;
 
-                // Perbaikan Trailer Kosong
-                const allVideos = [...(d.videos?.results || []), ...(dEn.videos?.results || [])];
-                const trailer = allVideos.find(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser' || v.type === 'Clip'));
-                
-                if (trailer) {
-                    document.getElementById('videoPlayer').src = `https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=0&rel=0`;
+                if (type === 'short') {
+                    document.getElementById('videoPlayer').src = `https://vidrock.net/embed/movie/${id}`;
                 } else {
-                    // Fallback jika tidak ada trailer YouTube, langsung muat Server 1
-                    document.getElementById('videoPlayer').src = type === 'tv' ? `https://vidrock.net/embed/tv/${id}/1/1` : `https://vidrock.net/embed/movie/${id}`;
+                    const allVideos = [...(d.videos?.results || []), ...(dEn.videos?.results || [])];
+                    const trailer = allVideos.find(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser' || v.type === 'Clip'));
+                    if (trailer) {
+                        document.getElementById('videoPlayer').src = `https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=0&rel=0`;
+                    } else {
+                        document.getElementById('videoPlayer').src = type === 'tv' ? `https://vidrock.net/embed/tv/${id}/1/1` : `https://vidrock.net/embed/movie/${id}`;
+                    }
                 }
                 
                 document.getElementById('mCast').innerHTML = (d.credits?.cast || []).slice(0, 10).map(c => `
@@ -371,4 +409,3 @@
     </script>
 </body>
 </html>
-
