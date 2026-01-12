@@ -27,7 +27,6 @@
         .pill { background: transparent; border: 1px solid #1c1c1c; color: #fff; padding: 8px 0; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; text-align: center; cursor: pointer; transition: border-color 0.2s; }
         .pill.active { background: transparent; color: #fff; border-color: #fff; }
         
-        /* EDIT: Stories Gradient */
         .highlights-section { padding: 15px 0; border-bottom: 1px solid #1c1c1c; background: #000; }
         .highlights-container { display: flex; gap: 15px; overflow-x: auto; padding: 0 15px; scrollbar-width: none; }
         .highlight-item { flex: 0 0 75px; text-align: center; cursor: pointer; }
@@ -39,13 +38,11 @@
         }
         .highlight-label { font-size: 9px; color: #555; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
         
-        /* EDIT: Main Grid rapat 1px */
         .movie-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; padding-top: 275px; padding-bottom: 100px; }
         .post-card { position: relative; aspect-ratio: 2/3; background: #0a0a0a; overflow: hidden; cursor: pointer; }
         .post-card img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* EDIT: Badge Ikon Carousel/Reels */
-        .badge-type { position: absolute; top: 8px; right: 8px; font-size: 14px; color: #fff; z-index: 5; text-shadow: 0 0 4px rgba(0,0,0,0.5); }
+        .badge-type { position: absolute; top: 8px; right: 8px; font-size: 13px; color: #fff; z-index: 5; text-shadow: 0 0 4px rgba(0,0,0,0.8); }
         .badge-rating { position: absolute; top: 6px; left: 6px; padding: 2px 5px; border-radius: 2px; font-size: 7px; font-weight: 900; z-index: 5; background: rgba(255,255,255,0.9); color: #000; }
         
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #000; border-top: 1px solid #1c1c1c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 300; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
@@ -53,13 +50,11 @@
         
         .modal-player { display: none; position: fixed; inset: 0; z-index: 200; background: #000; overflow-y: auto; }
         
-        /* EDIT: Typography Modal */
         #mTitle { font-size: 14px; font-weight: 700; color: #fff; letter-spacing: -0.2px; }
         #mTitleAlt { font-weight: 700; font-size: 14px; color: #fff; } 
         #mDesc { font-size: 13.5px; color: #fff; line-height: 1.4; font-weight: 400; display: inline; }
         #mMeta { font-size: 11px; color: #a8a8a8; font-weight: 400; margin-top: 4px; }
         
-        /* EDIT: Read More & Translate Button */
         .read-more-btn, .translate-btn { color: #a8a8a8; cursor: pointer; font-weight: 400; margin-left: 4px; font-size: 13.5px; }
         .time-ago { font-size: 10px; color: #a8a8a8; text-transform: uppercase; letter-spacing: 0.2px; margin-top: 6px; font-weight: 400; }
 
@@ -203,7 +198,8 @@
 
     <script>
         const API_KEY = 'bfa7df5310c9974f62f26c6789a8c00d';
-        let page = 1, loading = false, currentType = 'multi', currentGenre = '', currentYear = '', searchQuery = '', currentActorId = '', isLibraryMode = false, fullDesc = '', isTranslated = false;
+        let page = 1, loading = false, currentType = 'multi', currentGenre = '', currentYear = '', searchQuery = '', currentActorId = '', isLibraryMode = false, 
+            fullDesc = '', descIndo = '', isTranslated = false;
         
         const getStore = (key) => JSON.parse(localStorage.getItem(key) || '[]');
         const saveStore = (key, data) => localStorage.setItem(key, JSON.stringify(data));
@@ -263,7 +259,6 @@
             loading = false; l.style.width = '100%'; setTimeout(()=>l.style.width='0%', 400);
         }
 
-        // EDIT: Logic Badge Ikon & Time Ago
         function calculateTimeAgo(dateStr) {
             if(!dateStr) return "Baru saja";
             const diffDays = Math.floor((new Date() - new Date(dateStr)) / 86400000);
@@ -282,10 +277,11 @@
                 const finalType = m.m_type === 'short' ? 'short' : (m.m_type === 'tv' ? 'tv' : 'movie');
                 card.onclick = () => openModal(m.id, finalType);
                 
-                // EDIT: Ikon Badge
+                // Badge Ikon: Film juga ada badge (ikon play)
                 let badgeHTML = '';
                 if(m.m_type === 'tv') badgeHTML = '<i class="fa-solid fa-clone"></i>';
                 else if(m.m_type === 'short') badgeHTML = '<i class="fa-solid fa-clapperboard"></i>';
+                else badgeHTML = '<i class="fa-solid fa-play"></i>';
 
                 card.innerHTML = `<div class="badge-rating"><i class="fa-solid fa-star text-[6px]"></i> ${m.vote_average?.toFixed(1) || '0.0'}</div><div class="badge-type">${badgeHTML}</div><img src="https://image.tmdb.org/t/p/w342${m.poster_path}" onload="this.parentElement.classList.remove('skeleton')">`;
                 grid.appendChild(card);
@@ -313,21 +309,25 @@
                 document.getElementById('mTagline').innerText = d.tagline || dEn.tagline || "";
                 document.getElementById('mMeta').innerText = `${(d.release_date||d.first_air_date||'').split('-')[0]} // ${type.toUpperCase()}`;
                 
-                // EDIT: Logic Read More
-                fullDesc = d.overview || dEn.overview || "Sinopsis belum tersedia.";
-                if(fullDesc.length > 100) {
-                    document.getElementById('mDesc').innerText = fullDesc.substring(0, 100) + "...";
+                // Simpan dua versi deskripsi
+                descIndo = d.overview || ""; 
+                fullDesc = dEn.overview || "Sinopsis belum tersedia."; // Default ke Inggris jika Indo kosong
+                
+                // Jika Indo ada, langsung pakai Indo. Jika kosong, pakai Inggris + tombol terjemahan.
+                let currentText = descIndo ? descIndo : fullDesc;
+                
+                if(currentText.length > 100) {
+                    document.getElementById('mDesc').innerText = currentText.substring(0, 100) + "...";
                     document.getElementById('readMoreBtn').classList.remove('hidden');
                 } else {
-                    document.getElementById('mDesc').innerText = fullDesc;
+                    document.getElementById('mDesc').innerText = currentText;
                     document.getElementById('readMoreBtn').classList.add('hidden');
                 }
 
-                // EDIT: Logic Translate Button
-                document.getElementById('translateBtn').classList.toggle('hidden', d.overview !== "");
+                // Munculkan tombol terjemahan HANYA jika sinopsis awal yang ditampilkan adalah bahasa Inggris
+                document.getElementById('translateBtn').classList.toggle('hidden', descIndo !== "");
                 document.getElementById('translateBtn').innerText = "Lihat Terjemahan";
 
-                // EDIT: Logic Time Ago
                 document.getElementById('mTime').innerText = calculateTimeAgo(d.release_date || d.first_air_date);
 
                 const rating = d.vote_average || 0;
@@ -372,8 +372,11 @@
             } catch(e) { console.error(e); }
         }
 
-        // EDIT: Logic Toggle Functions
-        function expandDesc() { document.getElementById('mDesc').innerText = fullDesc; document.getElementById('readMoreBtn').classList.add('hidden'); }
+        function expandDesc() { 
+            let fullText = isTranslated ? "[Terjemahan]: " + fullDesc : (descIndo ? descIndo : fullDesc);
+            document.getElementById('mDesc').innerText = fullText; 
+            document.getElementById('readMoreBtn').classList.add('hidden'); 
+        }
         
         function toggleTranslation() {
             const display = document.getElementById('mDesc');
@@ -381,13 +384,16 @@
             if(!isTranslated) {
                 display.innerText = "Menerjemahkan...";
                 setTimeout(() => {
+                    // Dalam simulasi ini, kita anggap 'fullDesc' dari API En adalah sumber yang diterjemahkan
                     display.innerText = "[Terjemahan]: " + fullDesc;
                     btn.innerText = "Lihat Asli";
                     isTranslated = true;
-                }, 600);
+                    document.getElementById('readMoreBtn').classList.add('hidden');
+                }, 500);
             } else {
-                display.innerText = fullDesc.length > 100 ? fullDesc.substring(0, 100) + "..." : fullDesc;
-                if(fullDesc.length > 100) document.getElementById('readMoreBtn').classList.remove('hidden');
+                let originalText = descIndo ? descIndo : fullDesc;
+                display.innerText = originalText.length > 100 ? originalText.substring(0, 100) + "..." : originalText;
+                if(originalText.length > 100) document.getElementById('readMoreBtn').classList.remove('hidden');
                 btn.innerText = "Lihat Terjemahan";
                 isTranslated = false;
             }
