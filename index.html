@@ -10,50 +10,50 @@
     <style>
         body { background-color: #000; color: #fff; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        
-        /* HEADER & LAYOUT */
         .fixed-header-section { position: fixed; top: 0; width: 100%; z-index: 100; background: #000; border-bottom: 1px solid #1c1c1c; }
         .ig-header { padding: 12px 15px 5px 15px; }
+
         .ig-logo { font-family: 'DM Sans', sans-serif; font-weight: 700; font-style: italic; font-size: 24px; letter-spacing: -0.8px; text-transform: lowercase; cursor: pointer; }
         .verified-icon { font-size: 13px; color: #0095f6; margin-left: 5px; }
 
         .search-container { background: #0a0a0a; border-radius: 8px; display: flex; align-items: center; padding: 7px 12px; flex-grow: 1; border: 1px solid #1c1c1c; }
         .search-container input { background: transparent !important; border: none !important; color: white !important; font-size: 13px; width: 100%; outline: none !important; box-shadow: none !important; margin-left: 8px; }
 
-        /* STORIES GRADIENT (Genre) */
-        .highlights-section { padding: 15px 0; border-bottom: 1px solid #1c1c1c; background: #000; }
-        .highlights-container { display: flex; gap: 12px; overflow-x: auto; padding: 0 15px; scrollbar-width: none; }
-        .highlight-item { flex: 0 0 70px; text-align: center; cursor: pointer; }
-        .story-ring { padding: 2.5px; border-radius: 50%; display: inline-block; background: #1c1c1c; transition: 0.3s; }
-        .highlight-item.active .story-ring { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
-        .inner-circle { background: #000; padding: 2px; border-radius: 50%; }
-        .circle-icon { width: 58px; height: 58px; border-radius: 50%; background: #121212; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #fff; }
-        .highlight-label { font-size: 9px; color: #a8a8a8; font-weight: 500; text-transform: lowercase; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .highlight-item.active .highlight-label { color: #fff; font-weight: 700; }
-
-        /* MAIN GRID (Gap 1px & No Padding) */
-        .movie-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; padding-top: 275px; padding-bottom: 100px; }
-        .post-card { position: relative; aspect-ratio: 1/1.5; background: #0a0a0a; overflow: hidden; cursor: pointer; }
-        .post-card img { width: 100%; height: 100%; object-fit: cover; }
+        .year-selector { background: #0a0a0a; border: 1px solid #1c1c1c; border-radius: 8px; padding: 8px 12px; font-size: 9px; font-weight: 800; color: #fff; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .year-dropdown { display: none; position: fixed; top: 110px; right: 15px; width: 120px; max-height: 300px; background: #121212; border: 1px solid #1c1c1c; border-radius: 12px; z-index: 101; overflow-y: auto; }
+        .year-item { padding: 12px; font-size: 11px; font-weight: 600; text-align: center; border-bottom: 1px solid #1c1c1c; color: #888; cursor: pointer; }
+        .category-wrapper { padding: 5px 15px 12px 15px; }
+        .pill-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+        .pill { background: transparent; border: 1px solid #1c1c1c; color: #fff; padding: 8px 0; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; text-align: center; cursor: pointer; transition: border-color 0.2s; }
+        .pill.active { background: transparent; color: #fff; border-color: #fff; }
         
-        /* BADGE ICONS */
-        .badge-icon { position: absolute; top: 8px; right: 8px; color: #fff; font-size: 14px; text-shadow: 0 0 4px rgba(0,0,0,0.5); z-index: 5; }
-        .badge-rating { position: absolute; top: 8px; left: 8px; padding: 2px 5px; border-radius: 2px; font-size: 8px; font-weight: 900; z-index: 5; background: rgba(255,255,255,0.9); color: #000; }
-
-        /* NAVIGATION & ACTIVE TAB */
+        .highlights-section { padding: 15px 0; border-bottom: 1px solid #1c1c1c; background: #000; }
+        .highlights-container { display: flex; gap: 15px; overflow-x: auto; padding: 0 15px; scrollbar-width: none; }
+        .highlight-item { flex: 0 0 75px; text-align: center; cursor: pointer; }
+        .circle-icon { width: 62px; height: 62px; border-radius: 50%; background: #000; border: 1.5px solid #1c1c1c; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px auto; font-size: 18px; color: #555; }
+        .highlight-item.active .circle-icon { border-color: #fff; color: #fff; }
+        .highlight-label { font-size: 9px; color: #555; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
+        
+        .movie-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5px; padding-top: 275px; padding-bottom: 100px; }
+        .post-card { position: relative; aspect-ratio: 2/3; background: #0a0a0a; overflow: hidden; cursor: pointer; }
+        .post-card img { width: 100%; height: 100%; object-fit: cover; }
+        .badge-type { position: absolute; top: 6px; right: 6px; padding: 2px 5px; border-radius: 2px; font-size: 7px; font-weight: 900; text-transform: uppercase; z-index: 5; background: rgba(0,0,0,0.7); color: #fff; border: 0.5px solid rgba(255,255,255,0.2); }
+        .badge-rating { position: absolute; top: 6px; left: 6px; padding: 2px 5px; border-radius: 2px; font-size: 7px; font-weight: 900; z-index: 5; background: rgba(255,255,255,0.9); color: #000; }
+        
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #000; border-top: 1px solid #1c1c1c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 300; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
-        .nav-item { color: #fff; font-size: 22px; cursor: pointer; transition: 0.2s; }
-
-        /* MODAL STYLES (Typography, Read More, Translation) */
+        .nav-item { color: #fff; font-size: 20px; cursor: pointer; }
+        
         .modal-player { display: none; position: fixed; inset: 0; z-index: 200; background: #000; overflow-y: auto; }
         #mTitle { font-size: 14px; font-weight: 700; color: #fff; }
-        .like-count { font-size: 14px; font-weight: 600; color: #fff; }
         #mTitleAlt { font-size: 14px; font-weight: 600; }
-        #mDescDisplay { font-size: 13.5px; font-weight: 400; line-height: 1.4; color: #fff; }
-        .read-more-btn, .translate-btn { color: #a8a8a8; font-size: 13px; font-weight: 400; cursor: pointer; margin-left: 4px; }
+        #mDescDisplay { font-size: 13.5px; color: #fff; line-height: 1.4; font-weight: 400; }
+        .read-more-btn { color: #a8a8a8; cursor: pointer; font-weight: 400; margin-left: 4px; }
         .time-ago { font-size: 10px; color: #a8a8a8; text-transform: uppercase; letter-spacing: 0.2px; margin-top: 6px; font-weight: 400; }
-
+        
+        .story-border { padding: 2.5px; background: #1c1c1c; border-radius: 50%; display: inline-block; }
+        .story-inner { background: #000; padding: 2px; border-radius: 50%; }
         .story-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; display: block; }
+
         .skeleton { background: linear-gradient(90deg, #0a0a0a 25%, #1a1a1a 50%, #0a0a0a 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s infinite; }
         @keyframes skeleton-loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     </style>
@@ -68,7 +68,7 @@
                     <h1 class="ig-logo" onclick="location.reload()">amnesfubbia <span class="text-white opacity-40 font-normal italic">xx1</span></h1>
                     <i class="fa-solid fa-circle-check verified-icon"></i>
                 </div>
-                <div class="flex gap-6 text-xl"><i class="fa-regular fa-square-plus cursor-pointer"></i><i class="fa-regular fa-heart cursor-pointer" onclick="showLibrary('likes')"></i></div>
+                <div class="flex gap-6 text-xl"><i class="fa-regular fa-square-plus cursor-pointer"></i><i class="fa-regular fa-heart cursor-pointer"></i></div>
             </div>
             <div class="search-area flex items-center gap-2 mt-2">
                 <div class="search-container">
@@ -78,24 +78,22 @@
                 <div class="year-selector" onclick="toggleYearDropdown()"><span id="yearVal">TAHUN</span> <i class="fa-solid fa-chevron-down text-[7px]"></i></div>
             </div>
         </header>
-        
-        <div class="category-wrapper p-3">
-            <div class="pill-grid grid grid-cols-4 gap-2">
-                <button class="pill text-[10px] font-black uppercase border border-zinc-800 p-2 rounded-lg active" onclick="setFilter('type', 'multi', this)">Semua</button>
-                <button class="pill text-[10px] font-black uppercase border border-zinc-800 p-2 rounded-lg" onclick="setFilter('type', 'movie', this)">Film</button>
-                <button class="pill text-[10px] font-black uppercase border border-zinc-800 p-2 rounded-lg" onclick="setFilter('type', 'tv', this)">Series</button>
-                <button class="pill text-[10px] font-black uppercase border border-zinc-800 p-2 rounded-lg" onclick="setFilter('type', 'short', this)">Short</button>
+        <div class="category-wrapper">
+            <div class="pill-grid">
+                <button class="pill active" onclick="setFilter('type', 'multi', this)">Semua</button>
+                <button class="pill" onclick="setFilter('type', 'movie', this)">Film</button>
+                <button class="pill" onclick="setFilter('type', 'tv', this)">Series</button>
+                <button class="pill" onclick="setFilter('type', 'short', this)">Short</button>
             </div>
         </div>
-
         <div class="highlights-section">
             <div class="highlights-container no-scrollbar" id="genreHighlights">
-                <div class="highlight-item active" onclick="setFilter('genre', '', this)"><div class="story-ring"><div class="inner-circle"><div class="circle-icon"><i class="fa-solid fa-border-all"></i></div></div></div><p class="highlight-label">Semua</p></div>
-                <div class="highlight-item" onclick="setFilter('genre', '27', this)"><div class="story-ring"><div class="inner-circle"><div class="circle-icon"><i class="fa-solid fa-ghost"></i></div></div></div><p class="highlight-label">Horor</p></div>
-                <div class="highlight-item" onclick="setFilter('genre', '35', this)"><div class="story-ring"><div class="inner-circle"><div class="circle-icon"><i class="fa-solid fa-masks-theater"></i></div></div></div><p class="highlight-label">Komedi</p></div>
-                <div class="highlight-item" onclick="setFilter('genre', '10749', this)"><div class="story-ring"><div class="inner-circle"><div class="circle-icon"><i class="fa-solid fa-heart"></i></div></div></div><p class="highlight-label">Romantis</p></div>
-                <div class="highlight-item" onclick="setFilter('genre', '28', this)"><div class="story-ring"><div class="inner-circle"><div class="circle-icon"><i class="fa-solid fa-bolt"></i></div></div></div><p class="highlight-label">Aksi</p></div>
-                <div class="highlight-item" onclick="setFilter('genre', '18', this)"><div class="story-ring"><div class="inner-circle"><div class="circle-icon"><i class="fa-solid fa-clapperboard"></i></div></div></div><p class="highlight-label">Drama</p></div>
+                <div class="highlight-item active" onclick="setFilter('genre', '', this)"><div class="circle-icon"><i class="fa-solid fa-border-all"></i></div><p class="highlight-label">Semua</p></div>
+                <div class="highlight-item" onclick="setFilter('genre', '27', this)"><div class="circle-icon"><i class="fa-solid fa-ghost"></i></div><p class="highlight-label">Horor</p></div>
+                <div class="highlight-item" onclick="setFilter('genre', '35', this)"><div class="circle-icon"><i class="fa-solid fa-masks-theater"></i></div><p class="highlight-label">Komedi</p></div>
+                <div class="highlight-item" onclick="setFilter('genre', '10749', this)"><div class="circle-icon"><i class="fa-solid fa-heart"></i></div><p class="highlight-label">Romantis</p></div>
+                <div class="highlight-item" onclick="setFilter('genre', '28', this)"><div class="circle-icon"><i class="fa-solid fa-bolt"></i></div><p class="highlight-label">Aksi</p></div>
+                <div class="highlight-item" onclick="setFilter('genre', '18', this)"><div class="circle-icon"><i class="fa-solid fa-clapperboard"></i></div><p class="highlight-label">Drama</p></div>
             </div>
         </div>
     </div>
@@ -104,43 +102,38 @@
     <main id="feedGrid" class="movie-grid"></main>
 
     <nav class="bottom-nav">
-        <div class="nav-item active" id="nav-home" onclick="updateNav('home'); closeModal(); location.reload();"><i class="fa-solid fa-house"></i></div>
-        <div class="nav-item" id="nav-search" onclick="updateNav('search'); closeModal(); document.getElementById('searchInp').focus();"><i class="fa-regular fa-magnifying-glass"></i></div>
-        <div class="nav-item" id="nav-book" onclick="updateNav('book'); closeModal(); showLibrary('bookmarks');"><i class="fa-regular fa-bookmark"></i></div>
-        <div class="nav-item" id="nav-user" onclick="updateNav('user'); showUserProfil();"><i class="fa-regular fa-user"></i></div>
+        <div class="nav-item" onclick="closeModal(); location.reload();"><i class="fa-solid fa-house"></i></div>
+        <div class="nav-item" onclick="closeModal(); document.getElementById('searchInp').focus();"><i class="fa-regular fa-magnifying-glass"></i></div>
+        <div class="nav-item" onclick="closeModal(); showLibrary('bookmarks');"><i class="fa-regular fa-bookmark"></i></div>
+        <div class="nav-item" onclick="showUserProfil();"><i class="fa-regular fa-user"></i></div>
     </nav>
 
     <div id="movieModal" class="modal-player">
         <div class="max-w-xl mx-auto pb-40">
             <div class="px-4 h-[54px] flex items-center border-b border-zinc-900 sticky top-0 bg-black z-50">
                 <i class="fa-solid fa-chevron-left text-xl cursor-pointer" onclick="closeModal()"></i>
-                <div class="flex-grow text-center"><h2 id="mTitle" class="truncate"></h2></div>
+                <div class="flex-grow text-center"><h2 id="mTitle" class="truncate px-8"></h2></div>
                 <div class="w-5"></div> 
             </div>
             <div class="py-4"><div id="mCast" class="flex gap-4 overflow-x-auto no-scrollbar px-4"></div></div>
             <div class="aspect-video bg-zinc-900 w-full"><iframe id="videoPlayer" class="w-full h-full" allowfullscreen></iframe></div>
             
             <div class="px-4 py-3 flex justify-between items-center">
-                <div class="flex gap-4"><i id="btnLikeModal" class="interaction-icon text-2xl"></i><i class="fa-regular fa-comment text-2xl"></i><i class="fa-regular fa-paper-plane text-2xl"></i></div>
-                <i id="btnBookModal" class="interaction-icon text-2xl"></i>
+                <div class="flex gap-4"><i id="btnLikeModal" class="text-2xl cursor-pointer"></i><i class="fa-regular fa-comment text-2xl"></i><i class="fa-regular fa-paper-plane text-2xl"></i></div>
+                <i id="btnBookModal" class="text-2xl cursor-pointer"></i>
             </div>
 
-            <div class="px-4 mb-1"><p id="mLikeCount" class="like-count"></p></div>
+            <div class="px-4 mb-1"><p id="mLikeCount" class="font-bold text-sm"></p></div>
             <div class="px-4">
-                <p class="mb-1"><span id="mTitleAlt"></span> <span id="mTagline" class="text-zinc-400 font-normal ml-1"></span></p>
-                <div class="description-area">
-                    <span id="mDescDisplay"></span>
-                    <span id="readMoreBtn" class="read-more-btn hidden" onclick="expandDesc()">selengkapnya</span>
-                </div>
-                <div id="translateBtn" class="translate-btn hidden mt-1" onclick="translateDesc()">Lihat Terjemahan</div>
-                <p id="mMeta" class="text-[11px] text-zinc-500 mt-2 font-medium"></p>
+                <p class="mb-1"><span id="mTitleAlt"></span> <span id="mTagline" class="text-sm text-zinc-300"></span></p>
+                <p><span id="mDescDisplay"></span><span id="readMoreBtn" class="read-more-btn hidden" onclick="expandDesc()">selengkapnya</span></p>
+                <p id="mMeta" class="text-[11px] text-zinc-500 mt-2"></p>
                 <p id="mTime" class="time-ago"></p>
             </div>
-
             <div class="px-4 mt-6">
                 <div id="seriesControl" class="hidden">
-                    <select id="seasonSel" class="w-full bg-zinc-900 p-3 rounded-lg text-xs font-bold mb-4" onchange="loadEpisodes()"></select>
-                    <div id="episodeGrid" class="series-grid"></div>
+                    <select id="seasonSel" class="w-full bg-zinc-900 p-3 rounded-lg text-xs mb-4" onchange="loadEpisodes()"></select>
+                    <div id="episodeGrid" class="grid grid-cols-5 gap-2"></div>
                 </div>
                 <div id="serverList" class="grid grid-cols-2 gap-2 mt-4"></div>
             </div>
@@ -149,7 +142,7 @@
 
     <script>
         const API_KEY = 'bfa7df5310c9974f62f26c6789a8c00d';
-        let page = 1, loading = false, currentType = 'multi', currentGenre = '', currentYear = '', searchQuery = '', fullDesc = '', translatedDesc = '', isTranslated = false;
+        let page = 1, loading = false, currentType = 'multi', currentGenre = '', currentYear = '', searchQuery = '', fullDesc = '';
 
         const getStore = (key) => JSON.parse(localStorage.getItem(key) || '[]');
         const saveStore = (key, data) => localStorage.setItem(key, JSON.stringify(data));
@@ -165,17 +158,6 @@
         }
         function toggleYearDropdown() { const d = document.getElementById('yearDropdown'); d.style.display = (d.style.display === 'block') ? 'none' : 'block'; }
         function setYear(y) { currentYear = y; document.getElementById('yearVal').innerText = y || 'TAHUN'; toggleYearDropdown(); loadFeed(true); }
-
-        function updateNav(target) {
-            document.querySelectorAll('.nav-item').forEach(el => {
-                el.classList.remove('active');
-                const icon = el.querySelector('i');
-                icon.className = icon.className.replace('fa-solid', 'fa-regular');
-            });
-            const activeEl = document.getElementById('nav-' + target);
-            activeEl.classList.add('active');
-            activeEl.querySelector('i').className = activeEl.querySelector('i').className.replace('fa-regular', 'fa-solid');
-        }
 
         async function loadFeed(isNew = true) {
             if (loading) return;
@@ -220,12 +202,8 @@
                 card.className = 'post-card';
                 const finalType = m.m_type === 'short' ? 'short' : (m.m_type === 'tv' ? 'tv' : 'movie');
                 card.onclick = () => openModal(m.id, finalType);
-                
-                let badge = '';
-                if(m.m_type === 'tv') badge = '<i class="fa-solid fa-clone badge-icon"></i>'; // Carousel
-                else if(m.m_type === 'short') badge = '<i class="fa-solid fa-clapperboard badge-icon"></i>'; // Reels
-                
-                card.innerHTML = `<div class="badge-rating">${m.vote_average?.toFixed(1) || '0.0'}</div>${badge}<img src="https://image.tmdb.org/t/p/w342${m.poster_path}">`;
+                let badgeText = m.m_type === 'tv' ? 'Series' : (m.m_type === 'short' ? 'Short' : 'Film');
+                card.innerHTML = `<div class="badge-rating">${m.vote_average?.toFixed(1) || '0.0'}</div><div class="badge-type">${badgeText}</div><img src="https://image.tmdb.org/t/p/w342${m.poster_path}">`;
                 grid.appendChild(card);
             });
         }
@@ -244,27 +222,20 @@
             modal.style.display = 'block';
             document.body.style.overflow = 'hidden';
             window.currentMediaId = id;
-            isTranslated = false;
             
             const actualType = (type === 'short' || type === 'movie') ? 'movie' : 'tv';
             try {
-                const [resId, resEn] = await Promise.all([
-                    fetch(`https://api.themoviedb.org/3/${actualType}/${id}?api_key=${API_KEY}&language=id-ID&append_to_response=credits`),
-                    fetch(`https://api.themoviedb.org/3/${actualType}/${id}?api_key=${API_KEY}&language=en-US`)
-                ]);
-                const d = await resId.json(); const dEn = await resEn.json();
+                const res = await fetch(`https://api.themoviedb.org/3/${actualType}/${id}?api_key=${API_KEY}&language=id-ID&append_to_response=credits`);
+                const d = await res.json();
                 
                 document.getElementById('mTitle').innerText = d.title || d.name;
                 document.getElementById('mTitleAlt').innerText = (d.title || d.name).toLowerCase().replace(/\s+/g, '');
                 document.getElementById('mTagline').innerText = d.tagline || "";
-                document.getElementById('mLikeCount').innerText = `${Math.floor((d.vote_average||0)*1200).toLocaleString('id-ID')} suka`;
+                document.getElementById('mLikeCount').innerText = `${Math.floor((d.vote_average||0)*1100).toLocaleString('id-ID')} suka`;
                 document.getElementById('mTime').innerText = calculateTimeAgo(d.release_date || d.first_air_date);
                 document.getElementById('mMeta').innerText = `${(d.release_date||d.first_air_date||'').split('-')[0]} • ${type.toUpperCase()}`;
 
-                // Description & Translation Logic
-                fullDesc = d.overview || dEn.overview || "Sinopsis tidak tersedia.";
-                translatedDesc = d.overview ? "" : dEn.overview; // Simpan jika butuh ditranslate (mockup logic)
-                
+                fullDesc = d.overview || "Sinopsis tidak tersedia.";
                 if(fullDesc.length > 100) {
                     document.getElementById('mDescDisplay').innerText = fullDesc.substring(0, 100) + "...";
                     document.getElementById('readMoreBtn').classList.remove('hidden');
@@ -272,16 +243,12 @@
                     document.getElementById('mDescDisplay').innerText = fullDesc;
                     document.getElementById('readMoreBtn').classList.add('hidden');
                 }
-                
-                // Show "See Translation" if content looks English (simple check)
-                const isEnglish = /[a-zA-Z]/.test(fullDesc) && !d.overview;
-                document.getElementById('translateBtn').classList.toggle('hidden', !isEnglish);
 
                 document.getElementById('videoPlayer').src = type === 'tv' ? `https://vidrock.net/embed/tv/${id}/1/1` : `https://vidrock.net/embed/movie/${id}`;
                 
                 document.getElementById('mCast').innerHTML = (d.credits?.cast || []).slice(0, 8).map(c => `
                     <div class="flex-shrink-0 text-center">
-                        <div class="w-14 h-14 rounded-full border border-zinc-800 p-0.5"><img src="https://image.tmdb.org/t/p/w185${c.profile_path}" class="w-full h-full rounded-full object-cover"></div>
+                        <div class="story-border"><div class="story-inner"><img src="https://image.tmdb.org/t/p/w185${c.profile_path}" class="story-img"></div></div>
                         <p class="text-[9px] text-zinc-400 mt-1 truncate w-14">${c.name.split(' ')[0]}</p>
                     </div>`).join('');
 
@@ -300,29 +267,12 @@
         }
 
         function expandDesc() { document.getElementById('mDescDisplay').innerText = fullDesc; document.getElementById('readMoreBtn').classList.add('hidden'); }
-        
-        function translateDesc() {
-            if(!isTranslated) {
-                document.getElementById('mDescDisplay').innerText = "Sedang menerjemahkan...";
-                setTimeout(() => {
-                    document.getElementById('mDescDisplay').innerText = "[Terjemahan]: " + fullDesc;
-                    document.getElementById('translateBtn').innerText = "Lihat Asli";
-                    isTranslated = true;
-                }, 800);
-            } else {
-                document.getElementById('mDescDisplay').innerText = fullDesc;
-                document.getElementById('translateBtn').innerText = "Lihat Terjemahan";
-                isTranslated = false;
-            }
-        }
-
         async function loadEpisodes() {
             const s = document.getElementById('seasonSel').value, id = window.currentMediaId;
             const res = await fetch(`https://api.themoviedb.org/3/tv/${id}/season/${s}?api_key=${API_KEY}`);
             const d = await res.json();
-            document.getElementById('episodeGrid').innerHTML = (d.episodes||[]).map(e => `<div class="ep-box p-3 bg-zinc-900 text-center rounded text-[10px] font-bold" onclick="playEp(${s}, ${e.episode_number})">${e.episode_number}</div>`).join('');
+            document.getElementById('episodeGrid').innerHTML = (d.episodes||[]).map(e => `<div class="p-3 bg-zinc-900 text-center rounded text-[10px] font-bold" onclick="playEp(${s}, ${e.episode_number})">${e.episode_number}</div>`).join('');
         }
-
         function playEp(s, e) { document.getElementById('videoPlayer').src = `https://vidrock.net/embed/tv/${window.currentMediaId}/${s}/${e}`; }
         function closeModal() { document.getElementById('movieModal').style.display = 'none'; document.getElementById('videoPlayer').src = ''; document.body.style.overflow = 'auto'; }
         function searchAction() { searchQuery = document.getElementById('searchInp').value; loadFeed(true); }
@@ -351,7 +301,7 @@
             if(items.length === 0) document.getElementById('feedGrid').innerHTML = '<div class="col-span-3 text-center py-20 text-zinc-500 text-xs">Kosong</div>';
             else items.forEach(it => fetch(`https://api.themoviedb.org/3/movie/${it.id}?api_key=${API_KEY}`).then(r=>r.json()).then(m=>renderFeed([m])));
         }
-        function showUserProfil() { alert("Amnesfubbia XX1 - IG Style Edition"); }
+        function showUserProfil() { alert("Amnesfubbia XX1"); }
     </script>
 </body>
 </html>
