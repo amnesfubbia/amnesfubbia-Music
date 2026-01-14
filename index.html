@@ -105,6 +105,11 @@
                 <button class="pill" onclick="setFilter('type', 'tv', this)">Series</button>
                 <button class="pill" onclick="setFilter('type', 'short', this)">Short</button>
             </div>
+            <div class="pill-grid mt-2">
+                <button class="pill active" onclick="setSchedule('', this)">Semua</button>
+                <button class="pill" onclick="setSchedule('now_playing', this)">Sedang Tayang</button>
+                <button class="pill" onclick="setSchedule('upcoming', this)">Akan Datang</button>
+            </div>
         </div>
         <div class="highlights-section">
             <div class="highlights-container no-scrollbar" id="genreHighlights">
@@ -277,7 +282,6 @@
                 const finalType = m.m_type === 'short' ? 'short' : (m.m_type === 'tv' ? 'tv' : 'movie');
                 card.onclick = () => openModal(m.id, finalType);
                 
-                // Badge Ikon: Film juga ada badge (ikon play)
                 let badgeHTML = '';
                 if(m.m_type === 'tv') badgeHTML = '<i class="fa-solid fa-clone"></i>';
                 else if(m.m_type === 'short') badgeHTML = '<i class="fa-solid fa-clapperboard"></i>';
@@ -309,11 +313,9 @@
                 document.getElementById('mTagline').innerText = d.tagline || dEn.tagline || "";
                 document.getElementById('mMeta').innerText = `${(d.release_date||d.first_air_date||'').split('-')[0]} // ${type.toUpperCase()}`;
                 
-                // Simpan dua versi deskripsi
                 descIndo = d.overview || ""; 
-                fullDesc = dEn.overview || "Sinopsis belum tersedia."; // Default ke Inggris jika Indo kosong
+                fullDesc = dEn.overview || "Sinopsis belum tersedia."; 
                 
-                // Jika Indo ada, langsung pakai Indo. Jika kosong, pakai Inggris + tombol terjemahan.
                 let currentText = descIndo ? descIndo : fullDesc;
                 
                 if(currentText.length > 100) {
@@ -324,7 +326,6 @@
                     document.getElementById('readMoreBtn').classList.add('hidden');
                 }
 
-                // Munculkan tombol terjemahan HANYA jika sinopsis awal yang ditampilkan adalah bahasa Inggris
                 document.getElementById('translateBtn').classList.toggle('hidden', descIndo !== "");
                 document.getElementById('translateBtn').innerText = "Lihat Terjemahan";
 
@@ -384,7 +385,6 @@
             if(!isTranslated) {
                 display.innerText = "Menerjemahkan...";
                 setTimeout(() => {
-                    // Dalam simulasi ini, kita anggap 'fullDesc' dari API En adalah sumber yang diterjemahkan
                     display.innerText = "[Terjemahan]: " + fullDesc;
                     btn.innerText = "Lihat Asli";
                     isTranslated = true;
@@ -451,6 +451,12 @@
             document.querySelectorAll('.pill, .highlight-item').forEach(p => p.classList.remove('active'));
         }
         function showUserProfil() { alert("Amnesfubbia XX1\nBy Anasteas"); }
+        
+        // --- Bagian yang perlu ditambahkan fungsinya nanti ---
+        function setSchedule(v, el) {
+            // Kita akan mengisi logika di sini pada langkah berikutnya
+            console.log("Jadwal dipilih: " + v);
+        }
     </script>
 </body>
 </html>
