@@ -23,7 +23,7 @@
         .year-dropdown { display: none; position: fixed; top: 110px; right: 15px; width: 120px; max-height: 300px; background: #121212; border: 1px solid #1c1c1c; border-radius: 12px; z-index: 101; overflow-y: auto; }
         .year-item { padding: 12px; font-size: 11px; font-weight: 600; text-align: center; border-bottom: 1px solid #1c1c1c; color: #888; cursor: pointer; }
         .category-wrapper { padding: 5px 15px 12px 15px; }
-        .pill-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+        .pill-grid { display: grid; gap: 6px; }
         .pill { background: transparent; border: 1px solid #1c1c1c; color: #fff; padding: 8px 0; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; text-align: center; cursor: pointer; transition: border-color 0.2s; }
         .pill.active { background: transparent; color: #fff; border-color: #fff; }
         
@@ -99,14 +99,14 @@
             </div>
         </header>
         <div class="category-wrapper">
-            <div class="pill-grid">
+            <div class="pill-grid grid-cols-4">
                 <button class="pill active" onclick="setFilter('type', 'multi', this)">Semua</button>
                 <button class="pill" onclick="setFilter('type', 'movie', this)">Film</button>
                 <button class="pill" onclick="setFilter('type', 'tv', this)">Series</button>
                 <button class="pill" onclick="setFilter('type', 'short', this)">Short</button>
             </div>
-            <div class="pill-grid mt-2">
-                <button class="pill active" onclick="setSchedule('', this)">Semua</button>
+            <div class="pill-grid grid-cols-3 mt-2">
+                <button class="pill active" id="btnAllSchedule" onclick="setSchedule('', this)">Semua</button>
                 <button class="pill" onclick="setSchedule('now_playing', this)">Sedang Tayang</button>
                 <button class="pill" onclick="setSchedule('upcoming', this)">Akan Datang</button>
             </div>
@@ -204,7 +204,7 @@
     <script>
         const API_KEY = 'bfa7df5310c9974f62f26c6789a8c00d';
         let page = 1, loading = false, currentType = 'multi', currentGenre = '', currentYear = '', searchQuery = '', currentActorId = '', isLibraryMode = false, 
-            fullDesc = '', descIndo = '', isTranslated = false;
+            fullDesc = '', descIndo = '', isTranslated = false, currentSchedule = ''; // TAMBAH currentSchedule
         
         const getStore = (key) => JSON.parse(localStorage.getItem(key) || '[]');
         const saveStore = (key, data) => localStorage.setItem(key, JSON.stringify(data));
@@ -243,6 +243,9 @@
                 } else if (searchQuery) {
                     const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}${mandatory}&query=${encodeURIComponent(searchQuery)}&page=${page}`);
                     const data = await res.json(); items = (data.results || []).map(x => ({...x, m_type: x.media_type}));
+                } else if (currentSchedule) { // LOGIKA JADWAL BIOSKOP
+                    const res = await fetch(`https://api.themoviedb.org/3/movie/${currentSchedule}?api_key=${API_KEY}${mandatory}&page=${page}`);
+                    const data = await res.json(); items = (data.results || []).map(x => ({...x, m_type: 'movie'}));
                 } else if (currentType === 'short') {
                     const res = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}${mandatory}${genre}${year}&with_runtime.lte=40&page=${page}`);
                     const data = await res.json(); items = (data.results || []).map(x => ({...x, m_type: 'short'}));
@@ -419,13 +422,26 @@
         function closeModal() { document.getElementById('movieModal').style.display = 'none'; document.getElementById('videoPlayer').src = ''; document.body.style.overflow = 'auto'; }
         function filterByActor(actorId) { currentActorId = actorId; searchQuery = ''; closeModal(); loadFeed(true); window.scrollTo({top:0, behavior:'smooth'}); }
         function searchAction() { currentActorId = ''; searchQuery = document.getElementById('searchInp').value; loadFeed(true); }
+        
         function setFilter(t, v, el) { 
             isLibraryMode = false;
+            currentSchedule = ''; // Reset jadwal saat ganti tipe/genre
             document.querySelectorAll('.pill, .highlight-item').forEach(p => p.classList.remove('active'));
+            document.getElementById('btnAllSchedule').classList.add('active'); // Aktifkan "Semua" di baris jadwal
             el.classList.add('active');
             if(t === 'type') currentType = v; else currentGenre = v;
             searchQuery = ''; currentActorId = ''; loadFeed(true);
         }
+
+        function setSchedule(v, el) {
+            isLibraryMode = false;
+            currentSchedule = v;
+            // Hapus aktif di baris jadwal saja
+            el.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+            searchQuery = ''; currentActorId = ''; loadFeed(true);
+        }
+
         function updateModalButtons(id) {
             const isLiked = getStore('likes').some(x => x.id == id);
             const isBooked = getStore('bookmarks').some(x => x.id == id);
@@ -451,12 +467,6 @@
             document.querySelectorAll('.pill, .highlight-item').forEach(p => p.classList.remove('active'));
         }
         function showUserProfil() { alert("Amnesfubbia XX1\nBy Anasteas"); }
-        
-        // --- Bagian yang perlu ditambahkan fungsinya nanti ---
-        function setSchedule(v, el) {
-            // Kita akan mengisi logika di sini pada langkah berikutnya
-            console.log("Jadwal dipilih: " + v);
-        }
     </script>
 </body>
 </html>
