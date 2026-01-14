@@ -38,7 +38,9 @@
         }
         .highlight-label { font-size: 9px; color: #555; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
         
-        .movie-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; padding-top: 275px; padding-bottom: 100px; }
+        /* UPDATE: Padding-top ditambah menjadi 330px agar tidak terpotong */
+        .movie-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; padding-top: 330px; padding-bottom: 100px; }
+        
         .post-card { position: relative; aspect-ratio: 2/3; background: #0a0a0a; overflow: hidden; cursor: pointer; }
         .post-card img { width: 100%; height: 100%; object-fit: cover; }
         
@@ -204,7 +206,7 @@
     <script>
         const API_KEY = 'bfa7df5310c9974f62f26c6789a8c00d';
         let page = 1, loading = false, currentType = 'multi', currentGenre = '', currentYear = '', searchQuery = '', currentActorId = '', isLibraryMode = false, 
-            fullDesc = '', descIndo = '', isTranslated = false, currentSchedule = ''; // TAMBAH currentSchedule
+            fullDesc = '', descIndo = '', isTranslated = false, currentSchedule = ''; 
         
         const getStore = (key) => JSON.parse(localStorage.getItem(key) || '[]');
         const saveStore = (key, data) => localStorage.setItem(key, JSON.stringify(data));
@@ -243,7 +245,7 @@
                 } else if (searchQuery) {
                     const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}${mandatory}&query=${encodeURIComponent(searchQuery)}&page=${page}`);
                     const data = await res.json(); items = (data.results || []).map(x => ({...x, m_type: x.media_type}));
-                } else if (currentSchedule) { // LOGIKA JADWAL BIOSKOP
+                } else if (currentSchedule) { 
                     const res = await fetch(`https://api.themoviedb.org/3/movie/${currentSchedule}?api_key=${API_KEY}${mandatory}&page=${page}`);
                     const data = await res.json(); items = (data.results || []).map(x => ({...x, m_type: 'movie'}));
                 } else if (currentType === 'short') {
@@ -425,9 +427,9 @@
         
         function setFilter(t, v, el) { 
             isLibraryMode = false;
-            currentSchedule = ''; // Reset jadwal saat ganti tipe/genre
+            currentSchedule = ''; 
             document.querySelectorAll('.pill, .highlight-item').forEach(p => p.classList.remove('active'));
-            document.getElementById('btnAllSchedule').classList.add('active'); // Aktifkan "Semua" di baris jadwal
+            document.getElementById('btnAllSchedule').classList.add('active'); 
             el.classList.add('active');
             if(t === 'type') currentType = v; else currentGenre = v;
             searchQuery = ''; currentActorId = ''; loadFeed(true);
@@ -436,7 +438,6 @@
         function setSchedule(v, el) {
             isLibraryMode = false;
             currentSchedule = v;
-            // Hapus aktif di baris jadwal saja
             el.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
             el.classList.add('active');
             searchQuery = ''; currentActorId = ''; loadFeed(true);
