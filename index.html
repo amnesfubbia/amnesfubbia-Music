@@ -96,6 +96,7 @@
         <div class="highlights-section">
             <div class="highlights-container no-scrollbar" id="genreHighlights">
                 <div class="highlight-item active" onclick="setFilter('genre', '', this)"><div class="circle-icon"><i class="fa-solid fa-border-all"></i></div><p class="highlight-label">Semua</p></div>
+                <div class="highlight-item" onclick="setFilter('lang', 'ja', this)"><div class="circle-icon">🇯🇵</div><p class="highlight-label">Anime</p></div>
                 <div class="highlight-item" onclick="setFilter('genre', '12', this)"><div class="circle-icon"><i class="fa-solid fa-compass"></i></div><p class="highlight-label">Petualangan</p></div>
                 <div class="highlight-item" onclick="setFilter('genre', '35', this)"><div class="circle-icon"><i class="fa-solid fa-masks-theater"></i></div><p class="highlight-label">Komedi</p></div>
                 <div class="highlight-item" onclick="setFilter('genre', '10751', this)"><div class="circle-icon"><i class="fa-solid fa-users"></i></div><p class="highlight-label">Keluarga</p></div>
@@ -162,7 +163,7 @@
 
     <script>
         const API_KEY = 'bfa7df5310c9974f62f26c6789a8c00d';
-        let page = 1, loading = false, currentType = 'multi', currentGenre = '', currentYear = '', searchQuery = '', currentActorId = '', isLibraryMode = false, 
+        let page = 1, loading = false, currentType = 'multi', currentGenre = '', currentLang = '', currentYear = '', searchQuery = '', currentActorId = '', isLibraryMode = false, 
             fullDesc = '', descIndo = '', isTranslated = false, currentSchedule = ''; 
         
         const getStore = (key) => JSON.parse(localStorage.getItem(key) || '[]');
@@ -192,10 +193,10 @@
             const l = document.getElementById('loader'); l.style.width = '30%';
             try {
                 let items = [];
-                // FILTER UTAMA: Hanya genre 16 (Animation)
                 const mandatory = `&with_genres=16&language=id-ID`;
                 const year = currentYear ? (currentType === 'tv' ? `&first_air_date_year=${currentYear}` : `&primary_release_year=${currentYear}`) : '';
                 const genre = currentGenre ? `&with_genres=16,${currentGenre}` : '&with_genres=16';
+                const lang = currentLang ? `&with_original_language=${currentLang}` : '';
                 
                 if (currentActorId) {
                     const res = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}${mandatory}&with_cast=${currentActorId}&page=${page}`);
@@ -205,36 +206,28 @@
                     const data = await res.json(); 
                     items = (data.results || []).filter(x => x.genre_ids && x.genre_ids.includes(16)).map(x => ({...x, m_type: x.media_type}));
                 } else if (currentSchedule) { 
-                    // FIX: Jadwal tayang sekarang difilter hanya ANIMASI
-                    const res = await fetch(`https://api.themoviedb.org/3/movie/${currentSchedule}?api_key=${API_KEY}${mandatory}&page=${page}`);
-                    const data = await res.json(); items = (data.results || []).map(x => ({...x, m_type: 'movie'}));
+                    const res = await fetch(`https://api.themoviedb.org/3/movie/${currentSchedule}?api_key=${API_KEY}&language=id-ID&page=${page}`);
+                    const data = await res.json(); 
+                    // FILTER MANUAL: Hanya Animasi (ID 16)
+                    items = (data.results || []).filter(m => m.genre_ids && m.genre_ids.includes(16)).map(x => ({...x, m_type: 'movie'}));
                 } else if (currentType === 'short') {
-                    const res = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}${genre}${year}&with_runtime.lte=40&page=${page}`);
+                    const res = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}${genre}${lang}${year}&with_runtime.lte=40&page=${page}`);
                     const data = await res.json(); items = (data.results || []).map(x => ({...x, m_type: 'short'}));
                 } else if (currentType === 'multi') {
                     const [resM, resT] = await Promise.all([
-                        fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}${genre}${currentYear ? '&primary_release_year='+currentYear : ''}&page=${page}`),
-                        fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}${genre}${currentYear ? '&first_air_date_year='+currentYear : ''}&page=${page}`)
+                        fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}${genre}${lang}${currentYear ? '&primary_release_year='+currentYear : ''}&page=${page}`),
+                        fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}${genre}${lang}${currentYear ? '&first_air_date_year='+currentYear : ''}&page=${page}`)
                     ]);
                     const dM = await resM.json(); const dT = await resT.json();
                     items = [...(dM.results || []).map(x => ({...x, m_type:'movie'})), ...(dT.results || []).map(x => ({...x, m_type:'tv'}))];
                 } else {
-                    const res = await fetch(`https://api.themoviedb.org/3/discover/${currentType}?api_key=${API_KEY}${genre}${year}&page=${page}`);
+                    const res = await fetch(`https://api.themoviedb.org/3/discover/${currentType}?api_key=${API_KEY}${genre}${lang}${year}&page=${page}`);
                     const data = await res.json(); items = (data.results || []).map(x => ({...x, m_type: currentType}));
                 }
                 if(isNew) document.getElementById('feedGrid').innerHTML = '';
                 renderFeed(items);
             } catch (err) { console.error(err); }
             loading = false; l.style.width = '100%'; setTimeout(()=>l.style.width='0%', 400);
-        }
-
-        function calculateTimeAgo(dateStr) {
-            if(!dateStr) return "Baru saja";
-            const diffDays = Math.floor((new Date() - new Date(dateStr)) / 86400000);
-            if(diffDays <= 0) return "Hari ini";
-            if(diffDays < 7) return `${diffDays} hari lalu`;
-            if(diffDays < 30) return `${Math.floor(diffDays/7)} minggu lalu`;
-            return `${Math.floor(diffDays/30)} bulan lalu`;
         }
 
         function renderFeed(data) {
@@ -294,6 +287,14 @@
             } catch(e) { console.error(e); }
         }
 
+        function calculateTimeAgo(dateStr) {
+            if(!dateStr) return "Baru saja";
+            const diffDays = Math.floor((new Date() - new Date(dateStr)) / 86400000);
+            if(diffDays <= 0) return "Hari ini";
+            if(diffDays < 7) return `${diffDays} hari lalu`;
+            if(diffDays < 30) return `${Math.floor(diffDays/7)} minggu lalu`;
+            return `${Math.floor(diffDays/30)} bulan lalu`;
+        }
         function expandDesc() { let fullText = isTranslated ? "[Terjemahan]: " + fullDesc : (descIndo ? descIndo : fullDesc); document.getElementById('mDesc').innerText = fullText; document.getElementById('readMoreBtn').classList.add('hidden'); }
         function toggleTranslation() { const display = document.getElementById('mDesc'); const btn = document.getElementById('translateBtn'); if(!isTranslated) { display.innerText = "Menerjemahkan..."; setTimeout(() => { display.innerText = "[Terjemahan]: " + fullDesc; btn.innerText = "Lihat Asli"; isTranslated = true; document.getElementById('readMoreBtn').classList.add('hidden'); }, 500); } else { let originalText = descIndo ? descIndo : fullDesc; display.innerText = originalText.length > 100 ? originalText.substring(0, 100) + "..." : originalText; if(originalText.length > 100) document.getElementById('readMoreBtn').classList.remove('hidden'); btn.innerText = "Lihat Terjemahan"; isTranslated = false; } }
         async function loadEpisodes() { const s = document.getElementById('seasonSel').value, id = window.currentMediaId; const res = await fetch(`https://api.themoviedb.org/3/tv/${id}/season/${s}?api_key=${API_KEY}`); const d = await res.json(); document.getElementById('episodeGrid').innerHTML = (d.episodes||[]).map(e => `<div class="ep-box" id="ep-${e.episode_number}" onclick="playSeriesEp(${s}, ${e.episode_number})">${e.episode_number}</div>`).join(''); if(d.episodes && d.episodes.length > 0) playSeriesEp(s, d.episodes[0].episode_number); }
@@ -301,7 +302,7 @@
         function closeModal() { document.getElementById('movieModal').style.display = 'none'; document.getElementById('videoPlayer').src = ''; document.body.style.overflow = 'auto'; }
         function filterByActor(actorId) { currentActorId = actorId; searchQuery = ''; closeModal(); loadFeed(true); window.scrollTo({top:0, behavior:'smooth'}); }
         function searchAction() { currentActorId = ''; searchQuery = document.getElementById('searchInp').value; loadFeed(true); }
-        function setFilter(t, v, el) { isLibraryMode = false; currentSchedule = ''; document.querySelectorAll('.pill, .highlight-item').forEach(p => p.classList.remove('active')); document.getElementById('btnAllSchedule').classList.add('active'); el.classList.add('active'); if(t === 'type') currentType = v; else currentGenre = v; searchQuery = ''; currentActorId = ''; loadFeed(true); }
+        function setFilter(t, v, el) { isLibraryMode = false; currentSchedule = ''; document.querySelectorAll('.pill, .highlight-item').forEach(p => p.classList.remove('active')); document.getElementById('btnAllSchedule').classList.add('active'); el.classList.add('active'); if(t === 'type') { currentType = v; currentGenre = ''; currentLang = ''; } else if(t === 'genre') { currentGenre = v; currentLang = ''; } else if(t === 'lang') { currentLang = v; currentGenre = ''; } searchQuery = ''; currentActorId = ''; loadFeed(true); }
         function setSchedule(v, el) { isLibraryMode = false; currentSchedule = v; el.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active')); el.classList.add('active'); searchQuery = ''; currentActorId = ''; loadFeed(true); }
         function updateModalButtons(id) { const isLiked = getStore('likes').some(x => x.id == id); const isBooked = getStore('bookmarks').some(x => x.id == id); document.getElementById('btnLikeModal').className = isLiked ? 'fa-solid fa-heart text-red-500 interaction-icon' : 'fa-regular fa-heart interaction-icon'; document.getElementById('btnBookModal').className = isBooked ? 'fa-solid fa-bookmark text-white interaction-icon' : 'fa-regular fa-bookmark interaction-icon'; }
         function toggleItem(key, movie) { let items = getStore(key); const idx = items.findIndex(x => x.id == movie.id); if (idx > -1) items.splice(idx, 1); else items.push(movie); saveStore(key, items); updateModalButtons(movie.id); }
